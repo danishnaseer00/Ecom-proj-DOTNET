@@ -1,9 +1,11 @@
+using ECommerce.Model.Data;
 using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.Presenters;
 using ECommerce.Presenter.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce_web_project.Controllers;
 
@@ -13,20 +15,22 @@ public class HomeController : Controller
     private readonly ReviewPresenter _reviewPresenter;
     private readonly IRepository<Product> _productRepo;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly AppDbContext _context;
 
-    public HomeController(ProductListPresenter presenter, ReviewPresenter reviewPresenter, IRepository<Product> productRepo, UserManager<IdentityUser> userManager)
+    public HomeController(ProductListPresenter presenter, ReviewPresenter reviewPresenter, IRepository<Product> productRepo, UserManager<IdentityUser> userManager, AppDbContext context)
     {
         _presenter = presenter;
         _reviewPresenter = reviewPresenter;
         _productRepo = productRepo;
         _userManager = userManager;
+        _context = context;
     }
 
     public async Task<IActionResult> Index(Guid? categoryId, string? search)
     {
         var model = await _presenter.GetProductListAsync(search, categoryId);
 
-        var allProducts = await _productRepo.GetAllAsync();
+        var allProducts = await _context.Products.Include(p => p.Category).ToListAsync();
         ViewBag.NewArrivals = allProducts
             .OrderByDescending(p => p.CreatedAt)
             .Take(4)
@@ -58,6 +62,12 @@ public class HomeController : Controller
             }).ToList();
 
         return View(model);
+    }
+
+    public async Task<IActionResult> Shop(Guid? categoryId, string? search)
+    {
+        var model = await _presenter.GetProductListAsync(search, categoryId);
+        return View("Shop", model);
     }
 
     public async Task<IActionResult> Details(Guid id)
