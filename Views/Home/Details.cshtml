@@ -1,0 +1,27 @@
+@model ProductViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="max-w-7xl mx-auto px-8 py-8">
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-gray-100 rounded-lg overflow-hidden">
+            <img src="@(Model.ImageUrl ?? "/images/placeholder.jpg")" class="w-full h-96 object-cover" alt="@Model.Name" />
+        </div>
+        <div>
+            <p class="text-sm text-gray-500 uppercase tracking-wide">@Model.CategoryName</p>
+            <h1 class="text-3xl font-bold mt-2">@Model.Name</h1>
+            <p class="text-2xl font-bold text-gray-900 mt-4">$@Model.Price.ToString("F2")</p>
+            <p class="text-gray-500 mt-4 leading-relaxed">@Model.Description</p>
+            <p class="mt-4"><span class="text-sm text-gray-500">Stock: @Model.StockQuantity available</span></p>
+            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="mt-6">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div class="flex items-center gap-4">
+                    <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control w-20" />
+                    <button type="submit" class="btn btn-primary px-8 transition-all duration-200 active:scale-95">Add to Cart</button>
+                </div>
+            </form>
+            <a href="/" class="btn btn-outline-secondary mt-4">&larr; Continue Shopping</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="max-w-md mx-auto px-8 py-16">
+    <h1 class="text-3xl font-bold text-center mb-8">Create Account</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="bg-danger text-white p-3 rounded mb-4">
+            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p class="mb-0 text-sm">@err.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" />
+            </div>
+            <div>
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" />
+            </div>
+        </div>
+        <div>
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required />
+        </div>
+        <div>
+            <label class="form-label">Phone</label>
+            <input type="tel" name="phone" class="form-control" />
+        </div>
+        <div>
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Register</button>
+    </form>
+
+    <p class="text-center text-sm mt-4 text-gray-500">
+        Already have an account? <a href="/account/login">Login</a>
+    </p>
+</div>

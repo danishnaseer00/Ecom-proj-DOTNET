@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Ecommerce-web-project.csproj" />
+  <Project Path="ECommerce.Model\ECommerce.Model.csproj" />
+  <Project Path="ECommerce.Presenter\ECommerce.Presenter.csproj" />
+  <Project Path="ECommerce.WebAPI\ECommerce.WebAPI.csproj" />
+  <Project Path="ECommerce.AdminPanel\ECommerce.AdminPanel.csproj" />
+</Solution>

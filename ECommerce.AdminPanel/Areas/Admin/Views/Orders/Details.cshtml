@@ -1,0 +1,53 @@
+@model OrderViewModel
+@{
+    ViewData["Title"] = $"Order {Model.OrderNumber}";
+}
+
+<div class="card">
+    <div class="card-header"><h3 class="card-title">Order @Model.OrderNumber</h3></div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9"><span class="badge bg-info">@Model.Status</span></dd>
+
+            <dt class="col-sm-3">Total</dt>
+            <dd class="col-sm-9">$@Model.TotalAmount.ToString("F2")</dd>
+
+            <dt class="col-sm-3">Date</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("g")</dd>
+        </dl>
+
+        <h5>Items</h5>
+        <table class="table">
+            <thead>
+                <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Quantity</td>
+                        <td>$@item.UnitPrice.ToString("F2")</td>
+                        <td>$@item.Subtotal.ToString("F2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <form asp-action="UpdateStatus" method="post" class="mt-3">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="form-group">
+                <label>Update Status</label>
+                <select name="status" class="form-control">
+                    <option value="Pending">Pending</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</div>

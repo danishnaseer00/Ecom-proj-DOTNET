@@ -1,0 +1,38 @@
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+Debug/
+Release/
+
+# NuGet
+packages/
+.nuget/
+*.nupkg
+
+# Rider
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# SENSITIVE CREDENTIALS - DO NOT COMMIT!
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+.env
+.env.local
+
+# Node
+node_modules/
+dist/

@@ -1,0 +1,53 @@
+@model ECommerce.Presenter.ViewModels.OrderListViewModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="max-w-4xl mx-auto px-8 py-12">
+    <h1 class="text-3xl font-bold mb-8">My Orders</h1>
+
+    @if (!Model.Orders.Any())
+    {
+        <div class="text-center py-16">
+            <div class="text-gray-300 text-6xl mb-4"><i class="fas fa-box-open"></i></div>
+            <h3 class="text-xl text-gray-500">No orders yet</h3>
+            <p class="text-gray-400">Start shopping to see your orders here.</p>
+            <a href="/" class="btn btn-primary mt-4">Browse Products</a>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var order in Model.Orders)
+            {
+                <div class="card border rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <span class="text-sm text-gray-500">@order.OrderNumber</span>
+                            <span class="text-sm text-gray-400 ml-2">@order.CreatedAt.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <span class="badge
+                            @(order.Status == "Delivered" ? "bg-success" :
+                              order.Status == "Cancelled" ? "bg-danger" :
+                              order.Status == "Shipped" ? "bg-info" : "bg-warning")">
+                            @order.Status
+                        </span>
+                    </div>
+                    <div class="space-y-2">
+                        @foreach (var item in order.Items)
+                        {
+                            <div class="flex items-center justify-between text-sm">
+                                <span>@item.ProductName <span class="text-gray-400">x@(item.Quantity)</span></span>
+                                <span class="text-gray-900 font-semibold">$@item.Subtotal.ToString("F2")</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="border-t mt-4 pt-4 flex justify-between">
+                        <span class="font-semibold">Total</span>
+                        <span class="text-xl font-bold text-gray-900">$@order.TotalAmount.ToString("F2")</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

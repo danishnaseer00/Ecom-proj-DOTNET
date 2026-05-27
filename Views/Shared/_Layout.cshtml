@@ -1,0 +1,93 @@
+﻿@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — E-Commerce Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="border-b border-brand-gray-400" style="border-color: #adb5bd;">
+            <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+                <a href="/" class="font-heading text-2xl font-bold" style="color: #6C7A89;">Store</a>
+                <div class="flex items-center gap-6">
+                    <a href="/" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Home</a>
+                    <a href="/cart" class="text-sm font-medium transition-colors duration-200 relative" style="color: #6c757d;">
+                        <i class="fas fa-shopping-bag"></i>
+                    </a>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a href="/account/profile" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">@User.Identity?.Name</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+                            <button type="submit" class="text-sm font-medium transition-colors duration-200 btn btn-sm btn-outline-secondary" style="border: none; background: none; color: #6c757d; cursor: pointer;">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a href="/account/login" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Login</a>
+                        <a href="/account/register" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Register</a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="border-t mt-16 py-12 bg-gray-50" style="border-color: #adb5bd;">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <a href="/" class="font-heading text-2xl font-bold" style="color: #6C7A89;">Store</a>
+                    <p class="text-sm mt-4 leading-relaxed" style="color: #6c757d; max-width: 280px;">
+                        Your trusted online marketplace in Pakistan. Quality products, secure payments, and fast delivery.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: #212529;">Shop</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-sm transition-colors duration-200" style="color: #6c757d;">All Products</a></li>
+                        <li><a href="/" class="text-sm transition-colors duration-200" style="color: #6c757d;">New Arrivals</a></li>
+                        <li><a href="/" class="text-sm transition-colors duration-200" style="color: #6c757d;">Best Sellers</a></li>
+                        <li><a href="/" class="text-sm transition-colors duration-200" style="color: #6c757d;">Sale &amp; Deals</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: #212529;">Help</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/home/faq" class="text-sm transition-colors duration-200" style="color: #6c757d;">FAQ</a></li>
+                        <li><a href="/home/contact" class="text-sm transition-colors duration-200" style="color: #6c757d;">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wide mb-4" style="color: #212529;">Account</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/account/login" class="text-sm transition-colors duration-200" style="color: #6c757d;">Login</a></li>
+                        <li><a href="/account/register" class="text-sm transition-colors duration-200" style="color: #6c757d;">Register</a></li>
+                        <li><a href="/account/profile" class="text-sm transition-colors duration-200" style="color: #6c757d;">My Profile</a></li>
+                        <li><a href="/account/orders" class="text-sm transition-colors duration-200" style="color: #6c757d;">My Orders</a></li>
+                        <li><a href="/cart" class="text-sm transition-colors duration-200" style="color: #6c757d;">My Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t mt-8 pt-8 text-center text-sm" style="border-color: #adb5bd; color: #6c757d;">
+                &copy; 2026 E-Commerce Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

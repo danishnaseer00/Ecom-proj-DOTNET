@@ -1,0 +1,31 @@
+@model ECommerce.Model.Entities.Customer
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="max-w-2xl mx-auto px-8 py-12">
+    <h1 class="text-3xl font-bold mb-8">My Profile</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-success text-white p-3 rounded mb-4 text-sm">@TempData["Success"]</div>
+    }
+
+    <form method="post" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="form-label">First Name</label>
+                <input type="text" name="FirstName" class="form-control" value="@Model.FirstName" required />
+            </div>
+            <div>
+                <label class="form-label">Last Name</label>
+                <input type="text" name="LastName" class="form-control" value="@Model.LastName" required />
+            </div>
+        </div>
+        <div>
+            <label class="form-label">Phone</label>
+            <input type="tel" name="Phone" class="form-control" value="@Model.Phone" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>

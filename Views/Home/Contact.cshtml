@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="max-w-3xl mx-auto px-8 py-12">
+    <h1 class="text-3xl font-bold mb-8">Contact Us</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-success text-white p-3 rounded mb-4 text-sm">@TempData["Success"]</div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+            <div class="card border rounded-lg p-6">
+                <h2 class="text-lg font-semibold mb-4">Get in Touch</h2>
+                <div class="space-y-4 text-sm text-gray-500">
+                    <p><i class="fas fa-envelope mr-2"></i> support@ecommerce-store.com</p>
+                    <p><i class="fas fa-phone mr-2"></i> +92 300 1234567</p>
+                    <p><i class="fas fa-map-marker-alt mr-2"></i> Karachi, Pakistan</p>
+                </div>
+                <div class="mt-6 flex gap-4 text-xl text-gray-400">
+                    <a href="#" class="hover:text-gray-600"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-gray-600"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-gray-600"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card border rounded-lg p-6">
+                <h2 class="text-lg font-semibold mb-4">Send a Message</h2>
+                <form method="post" class="space-y-4">
+                    <div>
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div>
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required />
+                    </div>
+                    <div>
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

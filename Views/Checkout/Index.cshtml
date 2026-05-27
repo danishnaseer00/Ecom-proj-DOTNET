@@ -1,0 +1,134 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="max-w-4xl mx-auto px-8 py-8">
+    <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="bg-danger text-white p-3 rounded mb-4 text-sm">@Model.ErrorMessage</div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+            <div class="card border rounded-lg p-6 shadow-sm">
+                <h2 class="text-lg font-semibold mb-4">Shipping Address</h2>
+                <form id="payment-form" method="post" asp-action="PlaceOrder">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">Street</label>
+                            <input type="text" id="street" name="street" class="form-control" required />
+                        </div>
+                        <div>
+                            <label class="form-label">City</label>
+                            <input type="text" id="city" name="city" class="form-control" required />
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">State</label>
+                                <input type="text" id="state" name="state" class="form-control" />
+                            </div>
+                            <div>
+                                <label class="form-label">ZIP Code</label>
+                                <input type="text" id="zipCode" name="zipCode" class="form-control" required />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Country</label>
+                            <input type="text" id="country" name="country" class="form-control" value="Pakistan" required />
+                        </div>
+                    </div>
+
+                    <h2 class="text-lg font-semibold mt-6 mb-4">Payment</h2>
+                    <div id="card-element" class="form-control p-3 mb-4">
+                        <!-- Stripe card element -->
+                    </div>
+                    <div id="card-errors" class="text-sm text-danger mb-3" role="alert"></div>
+
+                    <input type="hidden" id="paymentIntentId" name="paymentIntentId" value="@Model.StripeClientSecret" />
+                    <button id="submit-btn" type="submit" class="btn btn-primary w-full py-3 transition-all duration-200 active:scale-95">
+                        Pay $@Model.Cart.Total.ToString("F2")
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="card border rounded-lg p-6 shadow-sm">
+                <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                <div class="space-y-4">
+                    @foreach (var item in Model.Cart.Items)
+                    {
+                        <div class="flex items-center justify-between text-sm">
+                            <div>
+                                <span class="font-medium">@item.ProductName</span>
+                                <span class="text-gray-400"> x@(item.Quantity)</span>
+                            </div>
+                            <span class="font-semibold">$@item.Subtotal.ToString("F2")</span>
+                        </div>
+                    }
+                </div>
+                <div class="border-t mt-4 pt-4 flex justify-between">
+                    <span class="font-semibold text-lg">Total</span>
+                    <span class="text-2xl font-bold text-gray-900">$@Model.Cart.Total.ToString("F2")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('@ViewBag.StripePublishableKey');
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#212529',
+                    fontFamily: "'Inter', sans-serif",
+                    '::placeholder': { color: '#adb5bd' }
+                }
+            }
+        });
+        cardElement.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorEl = document.getElementById('card-errors');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            const clientSecret = document.getElementById('paymentIntentId').value;
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: { card: cardElement }
+            });
+
+            if (error) {
+                errorEl.textContent = error.message;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Pay $@Model.Cart.Total.ToString("F2")';
+                return;
+            }
+
+            if (paymentIntent.status === 'succeeded') {
+                document.getElementById('paymentIntentId').value = paymentIntent.id;
+                const form = document.getElementById('payment-form');
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'paymentIntentId';
+                hiddenInput.value = paymentIntent.id;
+                form.appendChild(hiddenInput);
+
+                form.submit();
+            }
+        });
+    </script>
+}
