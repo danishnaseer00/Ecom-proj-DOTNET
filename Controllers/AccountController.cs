@@ -16,6 +16,7 @@ public class AccountController : Controller
     private readonly IRepository<Cart> _cartRepo;
     private readonly IRepository<CartItem> _cartItemRepo;
     private readonly OrderPresenter _orderPresenter;
+    private readonly IEmailSender _emailSender;
 
     public AccountController(
         UserManager<IdentityUser> userManager,
@@ -23,7 +24,8 @@ public class AccountController : Controller
         ICustomerRepository customerRepo,
         IRepository<Cart> cartRepo,
         IRepository<CartItem> cartItemRepo,
-        OrderPresenter orderPresenter)
+        OrderPresenter orderPresenter,
+        IEmailSender emailSender)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -31,6 +33,7 @@ public class AccountController : Controller
         _cartRepo = cartRepo;
         _cartItemRepo = cartItemRepo;
         _orderPresenter = orderPresenter;
+        _emailSender = emailSender;
     }
 
     private async Task MergeSessionCartAsync(Customer customer)
@@ -88,14 +91,62 @@ public class AccountController : Controller
         };
         await _customerRepo.AddAsync(customer);
 
-        await _signInManager.SignInAsync(user, isPersistent: false);
-        await MergeSessionCartAsync(customer);
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmLink = Url.Action("ConfirmEmail", "Account",
+            new { userId = user.Id, token }, Request.Scheme)!;
 
-        return RedirectToAction("Index", "Home");
+        var body = $"""
+            <h2>Welcome to Store!</h2>
+            <p>Please confirm your email by clicking the link below:</p>
+            <p><a href="{confirmLink}">Confirm Email</a></p>
+            <p>If you didn't create an account, you can ignore this email.</p>
+            """;
+
+        try
+        {
+            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Email] Failed to send confirmation to {email}: {ex.Message}");
+        }
+
+        TempData["ConfirmEmailLink"] = confirmLink;
+        TempData["ConfirmEmail"] = email;
+        return RedirectToAction("RegisterConfirmation");
     }
 
     [HttpGet]
-    public IActionResult Login() => View();
+    public IActionResult RegisterConfirmation() => View();
+
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            return RedirectToAction("Index", "Home");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return RedirectToAction("Index", "Home");
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        if (!result.Succeeded)
+            return View("Error");
+
+        var customer = await _customerRepo.GetByUserIdAsync(user.Id);
+        if (customer != null) await MergeSessionCartAsync(customer);
+
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return View("ConfirmEmail");
+    }
+
+    [HttpGet]
+    public IActionResult Login(string? email) 
+    {
+        if (!string.IsNullOrEmpty(email))
+            ViewBag.UnconfirmedEmail = email;
+        return View();
+    }
 
     [HttpPost]
     public async Task<IActionResult> Login(string email, string password)
@@ -106,21 +157,81 @@ public class AccountController : Controller
             return View();
         }
 
-        var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View();
+        }
+
+        if (!await _userManager.IsEmailConfirmedAsync(user))
+        {
+            ModelState.AddModelError("", "You must confirm your email before logging in.");
+            ViewBag.UnconfirmedEmail = email;
+            return View();
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(user, password, false, lockoutOnFailure: false);
         if (!result.Succeeded)
         {
             ModelState.AddModelError("", "Invalid login attempt.");
             return View();
         }
 
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user != null)
-        {
-            var customer = await _customerRepo.GetByUserIdAsync(user.Id);
-            if (customer != null) await MergeSessionCartAsync(customer);
-        }
+        var customer = await _customerRepo.GetByUserIdAsync(user.Id);
+        if (customer != null) await MergeSessionCartAsync(customer);
 
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult ResendConfirmation() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> ResendConfirmation(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ModelState.AddModelError("", "Email is required.");
+            return View();
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ModelState.AddModelError("", "No account found with that email.");
+            return View();
+        }
+
+        if (await _userManager.IsEmailConfirmedAsync(user))
+        {
+            ModelState.AddModelError("", "This email is already confirmed. Please log in.");
+            return View();
+        }
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmLink = Url.Action("ConfirmEmail", "Account",
+            new { userId = user.Id, token }, Request.Scheme)!;
+
+        var body = $"""
+            <h2>Welcome to Store!</h2>
+            <p>Please confirm your email by clicking the link below:</p>
+            <p><a href="{confirmLink}">Confirm Email</a></p>
+            <p>If you didn't create an account, you can ignore this email.</p>
+            """;
+
+        try
+        {
+            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Email] Failed to send confirmation to {email}: {ex.Message}");
+        }
+
+        TempData["ConfirmEmailLink"] = confirmLink;
+        TempData["ConfirmEmail"] = email;
+        return RedirectToAction("RegisterConfirmation");
     }
 
     [HttpPost]

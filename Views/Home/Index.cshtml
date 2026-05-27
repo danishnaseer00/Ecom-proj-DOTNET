@@ -29,14 +29,14 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             @foreach (var product in newArrivals)
             {
-                <a href="/home/details/@product.Id" class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                <a href="/home/details/@product.Id" class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col">
                     <div class="aspect-w-1 aspect-h-1 bg-gray-100">
-                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" class="w-full h-28 object-cover" alt="@product.Name" loading="lazy" />
+                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" alt="@product.Name" loading="lazy" />
                     </div>
-                    <div class="p-2.5">
+                    <div class="p-2.5 flex flex-col flex-1">
                         <p class="text-xs text-gray-500 uppercase tracking-wide">@product.CategoryName</p>
                         <h3 class="text-sm font-semibold mt-0.5 line-clamp-1">@product.Name</h3>
-                        <span class="text-base font-bold text-gray-900">$@product.Price.ToString("F2")</span>
+                        <span class="text-base font-bold text-gray-900 mt-auto pt-1">$@product.Price.ToString("F2")</span>
                     </div>
                 </a>
             }
@@ -54,14 +54,14 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             @foreach (var product in bestSellers)
             {
-                <a href="/home/details/@product.Id" class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                <a href="/home/details/@product.Id" class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col">
                     <div class="aspect-w-1 aspect-h-1 bg-gray-100">
-                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" class="w-full h-28 object-cover" alt="@product.Name" loading="lazy" />
+                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" alt="@product.Name" loading="lazy" />
                     </div>
-                    <div class="p-2.5">
+                    <div class="p-2.5 flex flex-col flex-1">
                         <p class="text-xs text-gray-500 uppercase tracking-wide">@product.CategoryName</p>
                         <h3 class="text-sm font-semibold mt-0.5 line-clamp-1">@product.Name</h3>
-                        <span class="text-base font-bold text-gray-900">$@product.Price.ToString("F2")</span>
+                        <span class="text-base font-bold text-gray-900 mt-auto pt-1">$@product.Price.ToString("F2")</span>
                     </div>
                 </a>
             }
@@ -74,19 +74,19 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         @foreach (var product in Model.Products)
         {
-            <div class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+            <div class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col">
                 <a href="/home/details/@product.Id">
                     <div class="aspect-w-1 aspect-h-1 bg-gray-100">
-                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" class="w-full h-28 object-cover" alt="@product.Name" loading="lazy" />
+                        <img src="@(product.ImageUrl ?? "/images/placeholder.jpg")" alt="@product.Name" loading="lazy" />
                     </div>
                 </a>
-                <div class="p-2.5">
+                <div class="p-2.5 flex flex-col flex-1">
                     <p class="text-xs text-gray-500 uppercase tracking-wide">@product.CategoryName</p>
                     <a href="/home/details/@product.Id">
                         <h3 class="text-sm font-semibold mt-0.5 line-clamp-1">@product.Name</h3>
                     </a>
                     <p class="text-gray-500 text-xs mt-0.5 line-clamp-1">@product.Description</p>
-                    <div class="flex items-center justify-between mt-1.5">
+                    <div class="flex items-center justify-between mt-auto pt-1.5">
                         <span class="text-base font-bold text-gray-900">$@product.Price.ToString("F2")</span>
                         <form asp-controller="Cart" asp-action="AddToCart" method="post">
                             <input type="hidden" name="productId" value="@product.Id" />

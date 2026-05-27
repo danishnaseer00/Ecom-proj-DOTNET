@@ -14,10 +14,10 @@
 </head>
 <body>
     <header>
-        <nav class="border-b border-brand-gray-400" style="border-color: #adb5bd;">
+        <nav class="border-b border-brand-gray-400 relative" style="border-color: #adb5bd;">
             <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
                 <a href="/" class="font-heading text-2xl font-bold" style="color: #6C7A89;">Store</a>
-                <div class="flex items-center gap-6">
+                <div class="hidden lg:flex items-center gap-6">
                     <a href="/" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Home</a>
                     <a href="/cart" class="text-sm font-medium transition-colors duration-200 relative" style="color: #6c757d;">
                         <i class="fas fa-shopping-bag"></i>
@@ -33,6 +33,29 @@
                     {
                         <a href="/account/login" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Login</a>
                         <a href="/account/register" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Register</a>
+                    }
+                </div>
+                <button id="mobile-menu-btn" class="lg:hidden flex items-center text-sm font-medium" style="color: #6c757d; background: none; border: none; cursor: pointer; padding: 0.5rem;">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t z-50" style="border-color: #adb5bd;">
+                <div class="px-4 py-3 space-y-3">
+                    <a href="/" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Home</a>
+                    <a href="/cart" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">
+                        <i class="fas fa-shopping-bag mr-2"></i>Cart
+                    </a>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a href="/account/profile" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">@User.Identity?.Name</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d; background: none; border: none; cursor: pointer; padding: 0;">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a href="/account/login" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Login</a>
+                        <a href="/account/register" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">Register</a>
                     }
                 </div>
             </div>
