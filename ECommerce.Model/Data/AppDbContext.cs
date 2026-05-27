@@ -17,6 +17,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -56,6 +57,13 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
         {
             e.Property(p => p.Amount).HasPrecision(18, 2);
             e.Property(p => p.Status).HasConversion<string>();
+        });
+
+        builder.Entity<Review>(e =>
+        {
+            e.HasOne(r => r.Product).WithMany().HasForeignKey(r => r.ProductId);
+            e.Property(r => r.UserName).HasMaxLength(100);
+            e.Property(r => r.Comment).HasMaxLength(1000);
         });
 
         builder.Entity<Customer>(e => e.OwnsOne(c => c.DefaultAddress));

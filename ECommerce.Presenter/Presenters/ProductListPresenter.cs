@@ -2,7 +2,6 @@ using ECommerce.Model.Data;
 using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.ViewModels;
-using ECommerce.Presenter.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Presenter.Presenters;
@@ -11,11 +10,13 @@ public class ProductListPresenter
 {
     private readonly IRepository<Product> _productRepo;
     private readonly IRepository<Category> _categoryRepo;
+    private readonly AppDbContext _context;
 
-    public ProductListPresenter(IRepository<Product> productRepo, IRepository<Category> categoryRepo)
+    public ProductListPresenter(IRepository<Product> productRepo, IRepository<Category> categoryRepo, AppDbContext context)
     {
         _productRepo = productRepo;
         _categoryRepo = categoryRepo;
+        _context = context;
     }
 
     public async Task<ProductListViewModel> GetProductListAsync(string? searchTerm = null, Guid? categoryId = null)
@@ -58,7 +59,7 @@ public class ProductListPresenter
 
     public async Task<ProductViewModel?> GetProductByIdAsync(Guid id)
     {
-        var product = await _productRepo.GetByIdAsync(id);
+        var product = await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
         if (product == null) return null;
 
         return new ProductViewModel

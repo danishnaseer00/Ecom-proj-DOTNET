@@ -107,6 +107,7 @@ a:hover { color: #5a6a78; }
 
 /* Spacing */
 .p-2\\.5 { padding: 0.625rem; }
+.p-3 { padding: 0.75rem; }
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
@@ -215,6 +216,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 
 /* Badges */
 .badge { display: inline-block; padding: 0.25em 0.5em; font-size: 0.75rem; font-weight: 600; border-radius: 9999px; }
+.text-warning { color: #ffc107; }
 .bg-info { background: #17a2b8; color: #fff; }
 .bg-success { background: #28a745; color: #fff; }
 .bg-warning { background: #ffc107; color: #212529; }

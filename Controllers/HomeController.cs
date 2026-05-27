@@ -2,6 +2,7 @@ using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.Presenters;
 using ECommerce.Presenter.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce_web_project.Controllers;
@@ -9,12 +10,16 @@ namespace Ecommerce_web_project.Controllers;
 public class HomeController : Controller
 {
     private readonly ProductListPresenter _presenter;
+    private readonly ReviewPresenter _reviewPresenter;
     private readonly IRepository<Product> _productRepo;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public HomeController(ProductListPresenter presenter, IRepository<Product> productRepo)
+    public HomeController(ProductListPresenter presenter, ReviewPresenter reviewPresenter, IRepository<Product> productRepo, UserManager<IdentityUser> userManager)
     {
         _presenter = presenter;
+        _reviewPresenter = reviewPresenter;
         _productRepo = productRepo;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Index(Guid? categoryId, string? search)
@@ -59,7 +64,38 @@ public class HomeController : Controller
     {
         var product = await _presenter.GetProductByIdAsync(id);
         if (product is null) return NotFound();
+
+        var reviews = await _reviewPresenter.GetReviewsAsync(id);
+        product.AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+        product.ReviewCount = reviews.Count;
+
+        ViewBag.Reviews = reviews;
         return View(product);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddReview(ReviewRequest request)
+    {
+        var product = await _productRepo.GetByIdAsync(request.ProductId);
+        if (product is null) return NotFound();
+
+        string userName;
+        string? userId = null;
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            userId = user?.Id;
+            userName = user?.Email ?? "Anonymous";
+        }
+        else
+        {
+            userName = "Guest";
+        }
+
+        await _reviewPresenter.AddReviewAsync(request, userId, userName);
+        TempData["ReviewSuccess"] = "Review submitted!";
+        return RedirectToAction("Details", new { id = request.ProductId });
     }
 
     public IActionResult Privacy() => View();

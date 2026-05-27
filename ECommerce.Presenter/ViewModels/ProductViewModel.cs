@@ -10,6 +10,8 @@ public class ProductViewModel
     public int StockQuantity { get; set; }
     public string CategoryName { get; set; } = string.Empty;
     public Guid CategoryId { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
 }
 
 public class ProductListViewModel
