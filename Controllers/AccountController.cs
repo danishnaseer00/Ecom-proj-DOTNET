@@ -314,6 +314,36 @@ public class AccountController : Controller
     }
 
     [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+    {
+        if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            TempData["Error"] = "All fields are required.";
+            return RedirectToAction("Profile");
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            TempData["Error"] = "New passwords do not match.";
+            return RedirectToAction("Profile");
+        }
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        if (!result.Succeeded)
+        {
+            TempData["Error"] = string.Join(" ", result.Errors.Select(e => e.Description));
+            return RedirectToAction("Profile");
+        }
+
+        TempData["Success"] = "Password changed successfully.";
+        return RedirectToAction("Profile");
+    }
+
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Orders()
     {
