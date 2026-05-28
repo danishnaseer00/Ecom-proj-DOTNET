@@ -16,8 +16,7 @@ public static class DependencyInjection
         services.AddScoped<AdminDashboardPresenter>();
         services.AddScoped<AdminOrderPresenter>();
         services.AddScoped<ReviewPresenter>();
-        services.AddScoped<IEmailSender, ResendEmailSender>();
-        services.AddHttpClient<IEmailSender, ResendEmailSender>();
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
         return services;
     }
 }
