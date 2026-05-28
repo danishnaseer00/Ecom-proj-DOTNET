@@ -6,9 +6,9 @@
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
-    <div class="grid md:grid-cols-2 gap-6 sm:gap-8 items-start">
-        <div class="bg-gray-100 rounded-lg overflow-hidden">
-            <img src="@(Model.ImageUrl ?? "/images/placeholder.svg")" class="w-full h-72 sm:h-80 object-cover" alt="@Model.Name" />
+    <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
+        <div class="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+            <img src="@(Model.ImageUrl ?? "/images/placeholder.svg")" class="max-w-full max-h-full object-contain" alt="@Model.Name" />
         </div>
         <div>
             <p class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">@Model.CategoryName</p>
