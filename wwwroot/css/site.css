@@ -281,6 +281,7 @@ a:hover { color: #5a6a78; }
 .inline-flex { display: inline-flex; }
 
 @media (min-width: 1024px) {
+    .lg\:flex-row { flex-direction: row; }
     .lg\:hidden { display: none; }
     .lg\:flex { display: flex; }
     .lg\:relative { position: relative; }
