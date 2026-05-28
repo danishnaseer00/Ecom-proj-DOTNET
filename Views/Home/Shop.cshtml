@@ -3,67 +3,73 @@
     ViewData["Title"] = "Shop";
 }
 
-<div class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
-    <h1 class="text-2xl sm:text-3xl font-bold mb-6">Shop All Products</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Shop All Products</h1>
 
-    <div class="flex flex-col sm:flex-row gap-6">
-        <aside class="w-full sm:w-56 flex-shrink-0">
-            <div class="card border rounded-lg p-4 shadow-sm">
-                <h3 class="text-sm font-semibold uppercase tracking-wide mb-3" style="color: #2a2a3d;">Categories</h3>
-                <ul class="space-y-1">
+    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <!-- Sidebar Categories -->
+        <aside class="w-full lg:w-48 flex-shrink-0 order-2 lg:order-1">
+            <div class="card border rounded-lg p-3 sm:p-4 shadow-sm">
+                <h3 class="text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3" style="color: #2a2a3d;">Categories</h3>
+                <ul class="space-y-1.5">
                     <li>
-                        <a href="/home/shop" class="text-sm transition-colors duration-200 @(Model.CategoryId == null ? "font-semibold" : "")" style="color: #2a2a3d;">All</a>
+                        <a href="/home/shop" class="text-xs sm:text-sm transition-colors duration-200 @(Model.CategoryId == null ? "font-semibold" : "")" style="color: #2a2a3d;">All Products</a>
                     </li>
                     @foreach (var cat in Model.Categories)
                     {
                         <li>
-                            <a href="/home/shop?categoryId=@cat.Id" class="text-sm transition-colors duration-200 @(Model.CategoryId == cat.Id ? "font-semibold" : "")" style="color: #6c757d;">
+                            <a href="/home/shop?categoryId=@cat.Id" class="text-xs sm:text-sm transition-colors duration-200 @(Model.CategoryId == cat.Id ? "font-semibold" : "")" style="color: #6c757d;">
                                 @cat.Name
                             </a>
                         </li>
                     }
                 </ul>
             </div>
-
-            <div class="card border rounded-lg p-4 shadow-sm mt-4">
-                <h3 class="text-sm font-semibold uppercase tracking-wide mb-3" style="color: #2a2a3d;">Search</h3>
-                <form action="/home/shop" method="get">
-                    <input type="text" name="search" class="form-control" placeholder="Search..." value="@Model.SearchTerm" />
-                </form>
-            </div>
         </aside>
 
-        <div class="flex-1">
+        <!-- Main Content -->
+        <div class="flex-1 order-1 lg:order-2">
+            <!-- Search Bar -->
+            <div class="mb-6 sm:mb-8">
+                <form action="/home/shop" method="get" class="flex items-center gap-2">
+                    <input type="text" name="search" class="form-control flex-1 text-sm" placeholder="Search products..." value="@Model.SearchTerm" />
+                    <button type="submit" class="btn btn-primary text-xs sm:text-sm py-1.5 px-4">
+                        <i class="fas fa-search mr-1"></i> Search
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Info -->
             @if (!string.IsNullOrEmpty(Model.SearchTerm))
             {
-                <p class="text-sm text-gray-500 mb-4">Results for "<strong>@Model.SearchTerm</strong>"</p>
+                <p class="text-xs sm:text-sm text-gray-500 mb-4">Results for "<strong>@Model.SearchTerm</strong>"</p>
             }
 
+            <!-- Product Grid -->
             @if (Model.Products.Any())
             {
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
                     @foreach (var product in Model.Products)
                     {
                         <div class="card border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col">
                             <a href="/home/details/@product.Id">
-                                <div class="aspect-w-1 aspect-h-1 bg-gray-100">
+                                <div class="aspect-w-1 aspect-h-1 bg-gray-100 h-32 sm:h-36">
                                     <img src="@(product.ImageUrl ?? "/images/placeholder.svg")" alt="@product.Name" loading="lazy" />
                                 </div>
                             </a>
-                            <div class="p-3 flex flex-col flex-1">
-                                <p class="text-xs text-gray-500 uppercase tracking-wide">@product.CategoryName</p>
+                            <div class="p-2 sm:p-3 flex flex-col flex-1 space-y-1">
+                                <p class="text-xs text-gray-500 uppercase tracking-wide line-clamp-1">@product.CategoryName</p>
                                 <a href="/home/details/@product.Id">
-                                    <h3 class="text-sm font-semibold mt-0.5 line-clamp-1">@product.Name</h3>
+                                    <h3 class="text-xs sm:text-sm font-medium line-clamp-1">@product.Name</h3>
                                 </a>
-                                <p class="text-gray-500 text-sm mt-0.5 line-clamp-2">@product.Description</p>
-                                <div class="flex items-center justify-between mt-auto pt-1.5 gap-1">
-                                    <span class="text-xs sm:text-sm font-bold text-gray-900">$@product.Price.ToString("F2")</span>
-                                    <div class="flex items-center gap-2">
-                                        <a href="/home/details/@product.Id" class="btn btn-sm btn-outline-secondary transition-all duration-200 active:scale-95">View</a>
+                                <div class="flex items-center justify-between mt-auto pt-1">
+                                    <span class="text-xs text-brand-gray-500">$@product.Price.ToString("F2")</span>
+                                    <div class="flex items-center gap-1">
+                                        <a href="/home/details/@product.Id" class="btn btn-sm btn-outline-secondary text-xs py-1 px-1.5 transition-all duration-200 active:scale-95">View</a>
                                         <form asp-controller="Cart" asp-action="AddToCart" method="post">
                                             <input type="hidden" name="productId" value="@product.Id" />
                                             <input type="hidden" name="quantity" value="1" />
-                                            <button type="submit" class="btn btn-sm btn-primary transition-all duration-200 active:scale-95">Add</button>
+                                            <button type="submit" class="btn btn-sm btn-primary text-xs py-1 px-1.5 transition-all duration-200 active:scale-95">Add</button>
                                         </form>
                                     </div>
                                 </div>
@@ -74,10 +80,10 @@
             }
             else
             {
-                <div class="text-center py-16">
-                    <div class="text-gray-300 text-6xl mb-4"><i class="fas fa-box-open"></i></div>
-                    <h3 class="text-xl text-gray-500">No products found</h3>
-                    <p class="text-gray-400">Try adjusting your search or browse categories.</p>
+                <div class="text-center py-8 sm:py-16">
+                    <div class="text-gray-300 text-4xl sm:text-6xl mb-3 sm:mb-4"><i class="fas fa-box-open"></i></div>
+                    <h3 class="text-lg sm:text-xl text-gray-500">No products found</h3>
+                    <p class="text-xs sm:text-sm text-gray-400">Try adjusting your search or browse categories.</p>
                 </div>
             }
         </div>
