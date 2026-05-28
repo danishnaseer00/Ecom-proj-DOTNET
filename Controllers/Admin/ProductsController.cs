@@ -11,7 +11,10 @@ public class ProductsController : Controller
 {
     private readonly AdminProductPresenter _presenter;
 
-    public ProductsController(AdminProductPresenter presenter) => _presenter = presenter;
+    public ProductsController(AdminProductPresenter presenter)
+    {
+        _presenter = presenter;
+    }
 
     public async Task<IActionResult> Index()
     {
@@ -27,10 +30,19 @@ public class ProductsController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ProductViewModel product)
+    public async Task<IActionResult> Create(ProductViewModel product, IFormFile? imageFile)
     {
-        if (!ModelState.IsValid) return View(product);
-        await _presenter.CreateProductAsync(product);
+        if (!ModelState.IsValid)
+        {
+            var categories = await _presenter.GetAllProductsAsync();
+            ViewBag.Categories = categories.Categories;
+            return View(product);
+        }
+        var (data, contentType) = await ReadFileAsync(imageFile);
+        await _presenter.CreateProductAsync(product, data, contentType);
+        TempData["Success"] = data != null
+            ? "Product created with image successfully."
+            : "Product created successfully.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -38,16 +50,25 @@ public class ProductsController : Controller
     {
         var categories = await _presenter.GetAllProductsAsync();
         ViewBag.Categories = categories.Categories;
-        var product = await _presenter.GetProductByIdAsync(id);
+        var product = await _presenter.GetProductByIdWithDataAsync(id);
         if (product is null) return NotFound();
         return View(product);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(ProductViewModel product)
+    public async Task<IActionResult> Edit(ProductViewModel product, IFormFile? imageFile)
     {
-        if (!ModelState.IsValid) return View(product);
-        await _presenter.UpdateProductAsync(product);
+        if (!ModelState.IsValid)
+        {
+            var categories = await _presenter.GetAllProductsAsync();
+            ViewBag.Categories = categories.Categories;
+            return View(product);
+        }
+        var (data, contentType) = await ReadFileAsync(imageFile);
+        await _presenter.UpdateProductAsync(product, data, contentType);
+        TempData["Success"] = data != null
+            ? "Product updated with new image."
+            : "Product updated successfully.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -55,6 +76,15 @@ public class ProductsController : Controller
     public async Task<IActionResult> Delete(Guid id)
     {
         await _presenter.DeleteProductAsync(id);
+        TempData["Success"] = "Product deleted.";
         return RedirectToAction(nameof(Index));
+    }
+
+    private static async Task<(byte[]? data, string? contentType)> ReadFileAsync(IFormFile? file)
+    {
+        if (file == null || file.Length == 0) return (null, null);
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms);
+        return (ms.ToArray(), file.ContentType);
     }
 }

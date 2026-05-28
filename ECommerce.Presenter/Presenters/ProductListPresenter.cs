@@ -40,7 +40,7 @@ public class ProductListPresenter
                 Name = p.Name,
                 Description = p.Description,
                 Price = p.Price,
-                ImageUrl = p.ImageUrl,
+                ImageUrl = p.ImageData != null ? $"/image/product/{p.Id}" : p.ImageUrl,
                 StockQuantity = p.StockQuantity,
                 CategoryName = p.Category.Name,
                 CategoryId = p.CategoryId
@@ -68,7 +68,7 @@ public class ProductListPresenter
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            ImageUrl = product.ImageUrl,
+            ImageUrl = product.ImageData != null ? $"/image/product/{product.Id}" : product.ImageUrl,
             StockQuantity = product.StockQuantity,
             CategoryName = product.Category.Name,
             CategoryId = product.CategoryId
