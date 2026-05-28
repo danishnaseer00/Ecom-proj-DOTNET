@@ -34,6 +34,11 @@ public class HomeController : Controller
         var model = await _presenter.GetProductListAsync(search, categoryId);
 
         var allProducts = await _context.Products.Include(p => p.Category).ToListAsync();
+        var allProductIds = allProducts.Select(p => p.Id).ToList();
+        var allReviews = await _context.Reviews.Where(r => allProductIds.Contains(r.ProductId)).ToListAsync();
+        var ratingLookup = allReviews.GroupBy(r => r.ProductId).ToDictionary(g => g.Key, g => g.Average(r => (double)r.Rating));
+        var countLookup = allReviews.GroupBy(r => r.ProductId).ToDictionary(g => g.Key, g => g.Count());
+
         ViewBag.NewArrivals = allProducts
             .OrderByDescending(p => p.CreatedAt)
             .Take(5)
@@ -46,7 +51,9 @@ public class HomeController : Controller
                 ImageUrl = p.ImageUrl,
                 StockQuantity = p.StockQuantity,
                 CategoryName = p.Category.Name,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                AverageRating = ratingLookup.GetValueOrDefault(p.Id, 0),
+                ReviewCount = countLookup.GetValueOrDefault(p.Id, 0)
             }).ToList();
 
         var salesData = await _context.OrderItems
@@ -73,7 +80,9 @@ public class HomeController : Controller
                 ImageUrl = p.ImageUrl,
                 StockQuantity = p.StockQuantity,
                 CategoryName = p.Category.Name,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                AverageRating = ratingLookup.GetValueOrDefault(p.Id, 0),
+                ReviewCount = countLookup.GetValueOrDefault(p.Id, 0)
             }).ToList();
 
         if (ViewBag.BestSellers.Count == 0)
@@ -90,7 +99,9 @@ public class HomeController : Controller
                     ImageUrl = p.ImageUrl,
                     StockQuantity = p.StockQuantity,
                     CategoryName = p.Category.Name,
-                    CategoryId = p.CategoryId
+                    CategoryId = p.CategoryId,
+                    AverageRating = ratingLookup.GetValueOrDefault(p.Id, 0),
+                    ReviewCount = countLookup.GetValueOrDefault(p.Id, 0)
                 }).ToList();
         }
 

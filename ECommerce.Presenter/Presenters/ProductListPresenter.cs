@@ -3,6 +3,7 @@ using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace ECommerce.Presenter.Presenters;
 
@@ -49,6 +50,11 @@ public class ProductListPresenter
             .Take(pageSize)
             .ToList();
 
+        var productIds = pageProducts.Select(p => p.Id).ToList();
+        var allReviews = await _context.Reviews.Where(r => productIds.Contains(r.ProductId)).ToListAsync();
+        var ratingLookup = allReviews.GroupBy(r => r.ProductId).ToDictionary(g => g.Key, g => g.Average(r => (double)r.Rating));
+        var countLookup = allReviews.GroupBy(r => r.ProductId).ToDictionary(g => g.Key, g => g.Count());
+
         return new ProductListViewModel
         {
             Products = pageProducts.Select(p => new ProductViewModel
@@ -60,7 +66,9 @@ public class ProductListPresenter
                 ImageUrl = p.ImageData != null ? $"/image/product/{p.Id}" : p.ImageUrl,
                 StockQuantity = p.StockQuantity,
                 CategoryName = p.Category.Name,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                AverageRating = ratingLookup.GetValueOrDefault(p.Id, 0),
+                ReviewCount = countLookup.GetValueOrDefault(p.Id, 0)
             }).ToList(),
             Categories = categories.Select(c => new CategoryViewModel
             {

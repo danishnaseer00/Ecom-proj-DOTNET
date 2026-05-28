@@ -68,6 +68,16 @@
                                 <a href="/home/details/@product.Id">
                                     <h3 class="text-xs sm:text-sm font-medium line-clamp-1 hover:text-brand-gray-500 transition-colors">@product.Name</h3>
                                 </a>
+                                <div class="flex items-center gap-0.5">
+                                    @for (var i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star" style="font-size:0.6rem;color:@(i <= Math.Round(product.AverageRating) ? "#ffc107" : "#ced4da")"></i>
+                                    }
+                                    @if (product.ReviewCount > 0)
+                                    {
+                                        <span class="text-xs" style="color:#6c757d;margin-left:2px;">(@product.ReviewCount)</span>
+                                    }
+                                </div>
                                 <div class="flex items-center justify-between mt-auto pt-1.5">
                                     <span class="text-xs font-medium text-brand-gray-500">$@product.Price.ToString("F2")</span>
                                     <div class="flex items-center gap-1 sm:gap-2">
