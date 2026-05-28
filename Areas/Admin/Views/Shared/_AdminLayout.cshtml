@@ -97,6 +97,8 @@
         .admin-content .small-box .icon { position: absolute; top: 0.75rem; right: 0.75rem; font-size: 2.5rem; opacity: 0.2; }
         .bg-sidebar { background: #2a2a3d; }
         .admin-content .small-box.bg-sidebar .icon { opacity: 0.15; }
+        .bg-stat { background: #5b7b9a; }
+        .admin-content .small-box.bg-stat .icon { opacity: 0.15; }
 
         /* Chart grid */
         .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.25rem; }
@@ -253,6 +255,16 @@
             }
             btn.addEventListener('click', toggle);
             overlay.addEventListener('click', toggle);
+
+            // Auto-dismiss alerts after 3 seconds
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.transition = 'opacity 0.4s';
+                    alert.style.opacity = '0';
+                    setTimeout(function() { alert.remove(); }, 400);
+                }, 3000);
+            });
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
