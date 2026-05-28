@@ -1,6 +1,7 @@
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.Presenters;
 using ECommerce.Presenter.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -36,6 +37,7 @@ public class CheckoutController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var sessionItems = GetCart();
@@ -60,6 +62,7 @@ public class CheckoutController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> PlaceOrder(string street, string city, string state, string zipCode, string country, string paymentIntentId)
     {
         var sessionItems = GetCart();

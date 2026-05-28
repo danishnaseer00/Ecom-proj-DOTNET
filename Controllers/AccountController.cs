@@ -62,10 +62,14 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Register() => View();
+    public IActionResult Register(string? returnUrl)
+    {
+        ViewBag.ReturnUrl = returnUrl;
+        return View();
+    }
 
     [HttpPost]
-    public async Task<IActionResult> Register(string firstName, string lastName, string email, string phone, string password)
+    public async Task<IActionResult> Register(string firstName, string lastName, string email, string phone, string password, string? returnUrl)
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
@@ -113,14 +117,19 @@ public class AccountController : Controller
 
         TempData["ConfirmEmailLink"] = confirmLink;
         TempData["ConfirmEmail"] = email;
+        TempData["ReturnUrl"] = returnUrl;
         return RedirectToAction("RegisterConfirmation");
     }
 
     [HttpGet]
-    public IActionResult RegisterConfirmation() => View();
+    public IActionResult RegisterConfirmation()
+    {
+        ViewBag.ReturnUrl = TempData["ReturnUrl"] as string;
+        return View();
+    }
 
     [HttpGet]
-    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    public async Task<IActionResult> ConfirmEmail(string userId, string token, string? returnUrl)
     {
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
             return RedirectToAction("Index", "Home");
@@ -133,27 +142,33 @@ public class AccountController : Controller
         if (!result.Succeeded)
             return View("Error");
 
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
         var customer = await _customerRepo.GetByUserIdAsync(user.Id);
         if (customer != null) await MergeSessionCartAsync(customer);
 
-        await _signInManager.SignInAsync(user, isPersistent: false);
         return View("ConfirmEmail");
     }
 
     [HttpGet]
-    public IActionResult Login(string? email) 
+    public IActionResult Login(string? returnUrl, string? email) 
     {
+        ViewBag.ReturnUrl = returnUrl;
         if (!string.IsNullOrEmpty(email))
             ViewBag.UnconfirmedEmail = email;
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login(string email, string password, string? returnUrl)
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
             ModelState.AddModelError("", "Email and password are required.");
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -161,6 +176,7 @@ public class AccountController : Controller
         if (user == null)
         {
             ModelState.AddModelError("", "Invalid login attempt.");
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -168,6 +184,7 @@ public class AccountController : Controller
         {
             ModelState.AddModelError("", "You must confirm your email before logging in.");
             ViewBag.UnconfirmedEmail = email;
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -175,8 +192,15 @@ public class AccountController : Controller
         if (!result.Succeeded)
         {
             ModelState.AddModelError("", "Invalid login attempt.");
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
 
         var customer = await _customerRepo.GetByUserIdAsync(user.Id);
         if (customer != null) await MergeSessionCartAsync(customer);

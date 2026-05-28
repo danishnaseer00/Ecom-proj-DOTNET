@@ -21,8 +21,8 @@
             @foreach (var item in Model.Items)
             {
                 <div class="card border rounded-lg p-4 flex items-center gap-4 shadow-sm">
-                    <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                        <img src="@(item.ImageUrl ?? "/images/placeholder.svg")" class="w-full h-full object-cover" alt="@item.ProductName" />
+                    <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <img src="@(item.ImageUrl ?? "/images/placeholder.svg")" class="max-w-full max-h-full object-contain" alt="@item.ProductName" />
                     </div>
                     <div class="flex-1">
                         <h4 class="font-semibold">@item.ProductName</h4>
