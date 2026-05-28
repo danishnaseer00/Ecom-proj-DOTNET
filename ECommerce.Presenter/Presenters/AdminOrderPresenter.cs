@@ -1,3 +1,4 @@
+using ECommerce.Model.Entities;
 using ECommerce.Model.Enums;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.ViewModels;
@@ -67,5 +68,10 @@ public class AdminOrderPresenter
             order.UpdatedAt = DateTime.UtcNow;
             await _orderRepo.UpdateAsync(order);
         }
+    }
+
+    public async Task<Order?> GetOrderEntityAsync(Guid orderId)
+    {
+        return await _orderRepo.GetByIdAsync(orderId);
     }
 }
