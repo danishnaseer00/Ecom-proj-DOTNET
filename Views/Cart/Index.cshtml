@@ -4,7 +4,7 @@
 }
 
 <div class="max-w-4xl mx-auto px-8 py-8">
-    <h1 class="text-3xl font-bold mb-6">Shopping Cart</h1>
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6">Shopping Cart</h1>
 
     @if (!Model.Items.Any())
     {
@@ -17,29 +17,31 @@
     }
     else
     {
-        <div class="space-y-4">
-            @foreach (var item in Model.Items)
-            {
-                <div class="card border rounded-lg p-4 flex items-center gap-4 shadow-sm">
-                    <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <img src="@(item.ImageUrl ?? "/images/placeholder.svg")" class="max-w-full max-h-full object-contain" alt="@item.ProductName" />
+        <div class="overflow-x-auto">
+            <div class="space-y-4" style="min-width: 640px;">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card border rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-4 shadow-sm">
+                        <div class="w-14 h-14 sm:w-20 sm:h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            <img src="@(item.ImageUrl ?? "/images/placeholder.svg")" class="max-w-full max-h-full object-contain" alt="@item.ProductName" />
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-sm sm:text-base">@item.ProductName</h4>
+                            <p class="text-gray-500 text-xs sm:text-sm">$@item.UnitPrice.ToString("F2")</p>
+                        </div>
+                        <form asp-action="UpdateQuantity" method="post" class="flex items-center gap-1 sm:gap-2">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="0" class="form-control w-12 sm:w-16" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary text-xs">Update</button>
+                        </form>
+                        <p class="font-bold text-sm sm:text-base w-16 sm:w-24 text-right">$@item.Subtotal.ToString("F2")</p>
+                        <form asp-action="Remove" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn btn-sm btn-danger text-xs">Remove</button>
+                        </form>
                     </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold">@item.ProductName</h4>
-                        <p class="text-gray-500">$@item.UnitPrice.ToString("F2")</p>
-                    </div>
-                    <form asp-action="UpdateQuantity" method="post" class="flex items-center gap-2">
-                        <input type="hidden" name="productId" value="@item.ProductId" />
-                        <input type="number" name="quantity" value="@item.Quantity" min="0" class="form-control w-16" />
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
-                    </form>
-                    <p class="font-bold w-24 text-right">$@item.Subtotal.ToString("F2")</p>
-                    <form asp-action="Remove" method="post">
-                        <input type="hidden" name="productId" value="@item.ProductId" />
-                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                    </form>
-                </div>
-            }
+                }
+            </div>
         </div>
 
         <div class="text-right mt-8">

@@ -27,7 +27,8 @@ public class ProductListPresenter
         var query = products.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
-            query = query.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+                || (p.Category != null && p.Category.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
 
         if (categoryId.HasValue)
             query = query.Where(p => p.CategoryId == categoryId.Value);
