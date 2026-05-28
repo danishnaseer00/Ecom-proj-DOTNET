@@ -2,6 +2,10 @@
 
 Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product catalog, shopping cart, checkout with Stripe, admin dashboard, user authentication, reviews, and email notifications.
 
+## Live Demo
+
+[https://Danishathugging-danstore.hf.space](https://Danishathugging-danstore.hf.space)
+
 ## Features
 
 - **Product Catalog** — Browse, search, filter by category, sort by price/name/newest
@@ -47,11 +51,11 @@ The project uses secrets for sensitive data. Right-click project → **Manage Us
   },
   "Resend": {
     "ApiKey": "re_...",
-    "FromEmail": "noreply@yourdomain.com",
+    "FromEmail": "danishnaseer000@gmail.com",
     "FromName": "DanStore"
   },
   "Admin": {
-    "Email": "admin@danstore.com",
+    "Email": "danishnaseer000@gmail.com",
     "Password": "YourPassword123"
   }
 }
