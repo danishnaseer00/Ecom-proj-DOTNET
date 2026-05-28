@@ -1,3 +1,12 @@
+---
+title: DanStore
+emoji: 🛒
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # DanStore — E-Commerce Web Application
 
 Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product catalog, shopping cart, checkout with Stripe, admin dashboard, user authentication, reviews, and email notifications.
