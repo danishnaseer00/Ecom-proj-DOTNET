@@ -4,21 +4,21 @@
 }
 
 <div class="stat-grid">
-    <div class="small-box bg-stat">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalOrders</h3>
             <p>Total Orders</p>
         </div>
         <div class="icon"><i class="fas fa-shopping-cart"></i></div>
     </div>
-    <div class="small-box bg-stat">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>$@Model.Revenue.ToString("F2")</h3>
             <p>Total Revenue</p>
         </div>
         <div class="icon"><i class="fas fa-dollar-sign"></i></div>
     </div>
-    <div class="small-box bg-stat">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalProducts</h3>
             <p>Products</p>
@@ -27,7 +27,7 @@
     </div>
     @if (Model.LowStockCount > 0)
     {
-        <div class="small-box bg-stat">
+        <div class="small-box bg-sidebar">
             <div class="inner">
                 <h3>@Model.LowStockCount</h3>
                 <p>Low Stock Items</p>
@@ -35,7 +35,7 @@
             <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
         </div>
     }
-    <div class="small-box bg-stat">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalCustomers</h3>
             <p>Customers</p>
@@ -116,10 +116,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         var sidebarColor = '#2a2a3d';
 
-        // Dusty blue + medium gray palette matching primary
-        var palette = ['#3d4f6a', '#5b7b9a', '#7d9bb0', '#8a8a9a', '#a0a0b0', '#b8b8c8'];
-        var dustyBlue = '#5b7b9a';
-        var mediumGray = '#8a8a9a';
+        // Minimal, elegant palette — muted neutrals and deep charcoal
+        var palette = ['#2a2a3d', '#4a4a5a', '#6b6b7a', '#8a8a98', '#a5a5b0', '#c0c0c8'];
+        var accent1 = '#2a2a3d';
+        var accent2 = '#6b6b7a';
 
         // Orders by Status (Doughnut)
         var ordersCtx = document.getElementById('ordersChart').getContext('2d');
@@ -150,11 +150,11 @@
                 datasets: [{
                     label: 'Revenue',
                     data: @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Revenue))),
-                    borderColor: dustyBlue,
-                    backgroundColor: dustyBlue + '22',
+                    borderColor: accent1,
+                    backgroundColor: accent1 + '22',
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: dustyBlue,
+                    pointBackgroundColor: accent1,
                     pointRadius: 4
                 }]
             },
@@ -177,7 +177,7 @@
                 datasets: [{
                     label: 'Units Sold',
                     data: @Html.Raw(Json.Serialize(Model.TopProducts.Select(p => p.TotalSold))),
-                    backgroundColor: mediumGray,
+                    backgroundColor: accent2,
                     borderRadius: 4
                 }]
             },
