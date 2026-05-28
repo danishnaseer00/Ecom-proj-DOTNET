@@ -6,9 +6,9 @@
 }
 
 <div class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
-    <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
+    <div class="grid md:grid-cols-2 gap-6 sm:gap-8 items-start">
         <div class="bg-gray-100 rounded-lg overflow-hidden">
-            <img src="@(Model.ImageUrl ?? "/images/placeholder.svg")" class="w-full h-64 sm:h-96 object-cover" alt="@Model.Name" />
+            <img src="@(Model.ImageUrl ?? "/images/placeholder.svg")" class="w-full h-72 sm:h-80 object-cover" alt="@Model.Name" />
         </div>
         <div>
             <p class="text-xs sm:text-sm text-gray-500 uppercase tracking-wide">@Model.CategoryName</p>
@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    <section class="mt-12 sm:mt-16">
+    <section class="mt-12 sm:mt-16 max-w-2xl">
         <h2 class="text-xl sm:text-2xl font-bold mb-6">Customer Reviews</h2>
 
         @if (TempData["ReviewSuccess"] != null)
@@ -53,29 +53,38 @@
             <div class="bg-success text-white p-3 rounded mb-4 text-sm">@TempData["ReviewSuccess"]</div>
         }
 
-        <div class="card border rounded-lg p-4 sm:p-6 shadow-sm mb-8">
-            <h3 class="font-semibold mb-4">Write a Review</h3>
-            <form asp-action="AddReview" method="post">
-                <input type="hidden" name="ProductId" value="@Model.Id" />
-                <div class="mb-4">
-                    <label class="form-label">Rating</label>
-                    <div class="flex items-center gap-1" id="star-rating">
-                        @for (var i = 1; i <= 5; i++)
-                        {
-                            <button type="button" class="star-btn text-2xl text-gray-300" data-value="@i" style="background:none;border:none;cursor:pointer;padding:0;line-height:1;">
-                                <i class="fas fa-star"></i>
-                            </button>
-                        }
-                        <input type="hidden" name="Rating" id="rating-value" value="5" />
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="card border rounded-lg p-4 sm:p-6 shadow-sm mb-8">
+                <h3 class="font-semibold mb-4">Write a Review</h3>
+                <form asp-action="AddReview" method="post">
+                    <input type="hidden" name="ProductId" value="@Model.Id" />
+                    <div class="mb-4">
+                        <label class="form-label">Rating</label>
+                        <div class="flex items-center gap-1" id="star-rating">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                <button type="button" class="star-btn text-2xl text-gray-300" data-value="@i" style="background:none;border:none;cursor:pointer;padding:0;line-height:1;">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            }
+                            <input type="hidden" name="Rating" id="rating-value" value="5" />
+                        </div>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Comment</label>
-                    <textarea name="Comment" class="form-control" rows="3" placeholder="Share your thoughts..." maxlength="1000"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-            </form>
-        </div>
+                    <div class="mb-4">
+                        <label class="form-label">Comment</label>
+                        <textarea name="Comment" class="form-control" rows="3" placeholder="Share your thoughts..." maxlength="1000"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="card border rounded-lg p-4 sm:p-6 shadow-sm mb-8 text-center">
+                <p class="text-sm text-gray-500 mb-3"><i class="fas fa-lock mr-2"></i>Please <a href="/account/login" class="font-semibold" style="color:#2a2a3d;">login</a> or <a href="/account/register" class="font-semibold" style="color:#2a2a3d;">register</a> to write a review.</p>
+            </div>
+        }
 
         @if (reviews.Any())
         {

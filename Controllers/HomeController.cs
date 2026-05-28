@@ -3,6 +3,7 @@ using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.Presenters;
 using ECommerce.Presenter.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ public class HomeController : Controller
         var allProducts = await _context.Products.Include(p => p.Category).ToListAsync();
         ViewBag.NewArrivals = allProducts
             .OrderByDescending(p => p.CreatedAt)
-            .Take(4)
+            .Take(5)
             .Select(p => new ProductViewModel
             {
                 Id = p.Id,
@@ -46,9 +47,21 @@ public class HomeController : Controller
                 CategoryId = p.CategoryId
             }).ToList();
 
+        var salesData = await _context.OrderItems
+            .GroupBy(oi => oi.ProductId)
+            .Select(g => new { ProductId = g.Key, TotalSold = g.Sum(oi => oi.Quantity) })
+            .ToListAsync();
+
+        var bestSellerIds = salesData
+            .OrderByDescending(s => s.TotalSold)
+            .Take(5)
+            .Select(s => s.ProductId)
+            .ToHashSet();
+
         ViewBag.BestSellers = allProducts
-            .OrderBy(p => Guid.NewGuid())
-            .Take(4)
+            .Where(p => bestSellerIds.Contains(p.Id))
+            .OrderByDescending(p => bestSellerIds.Contains(p.Id) ? salesData.First(s => s.ProductId == p.Id).TotalSold : 0)
+            .Take(5)
             .Select(p => new ProductViewModel
             {
                 Id = p.Id,
@@ -60,6 +73,24 @@ public class HomeController : Controller
                 CategoryName = p.Category.Name,
                 CategoryId = p.CategoryId
             }).ToList();
+
+        if (ViewBag.BestSellers.Count == 0)
+        {
+            ViewBag.BestSellers = allProducts
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(5)
+                .Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    ImageUrl = p.ImageUrl,
+                    StockQuantity = p.StockQuantity,
+                    CategoryName = p.Category.Name,
+                    CategoryId = p.CategoryId
+                }).ToList();
+        }
 
         ViewBag.RecentReviews = await _reviewPresenter.GetRecentReviewsAsync(6);
 
@@ -86,26 +117,14 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddReview(ReviewRequest request)
     {
         var product = await _productRepo.GetByIdAsync(request.ProductId);
         if (product is null) return NotFound();
 
-        string userName;
-        string? userId = null;
-
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            userId = user?.Id;
-            userName = user?.Email ?? "Anonymous";
-        }
-        else
-        {
-            userName = "Guest";
-        }
-
-        await _reviewPresenter.AddReviewAsync(request, userId, userName);
+        var user = await _userManager.GetUserAsync(User);
+        await _reviewPresenter.AddReviewAsync(request, user!.Id, user.Email ?? "Anonymous");
         TempData["ReviewSuccess"] = "Review submitted!";
         return RedirectToAction("Details", new { id = request.ProductId });
     }
