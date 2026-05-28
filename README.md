@@ -1,67 +1,60 @@
-# E-Commerce Web Project
+# DanStore — E-Commerce Web Application
 
-## 🔐 Setup Instructions
+Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product catalog, shopping cart, checkout with Stripe, admin dashboard, user authentication, reviews, and email notifications.
 
-### 1. Configure Your Secrets
+## Features
 
-This project uses sensitive credentials (database passwords, API keys). They are **NOT** included in the repository for security.
+- **Product Catalog** — Browse, search, filter by category, sort by price/name/newest
+- **Shopping Cart** — Persisted for logged-in users; session-based for guests
+- **Checkout** — Stripe payment integration with shipping address
+- **User Accounts** — Register, login, profile, change password, order history
+- **Reviews & Ratings** — Star ratings with reviews on product detail page, review counts shown on product cards
+- **Admin Dashboard** — Manage products, categories, orders, customers; update order status with email notification
+- **Email Notifications** — Account confirmation, order confirmation, shipped alerts via Resend
+- **Responsive Design** — Works on desktop and mobile
 
-#### **Option A: User Secrets (Recommended for Development)**
-
-Right-click your project in Visual Studio:
-```
-Manage User Secrets
-```
-
-This opens your local secrets file (stored on your machine, NOT in Git).
-
-Copy from `appsettings.Example.json` and add your actual credentials:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "your_actual_connection_string"
-  },
-  "Stripe": {
-    "PublishableKey": "your_publishable_key",
-    "SecretKey": "your_secret_key"
-  },
-  "Resend": {
-    "ApiKey": "your_resend_key"
-  }
-}
-```
-
-#### **Option B: Create `appsettings.Development.json` (Local Only)**
-
-Add to root of project with your credentials. **This is already in `.gitignore`, so it won't be committed.**
-
-### 2. Clone & Setup (For Other Developers)
-
-1. Clone the repo
-2. Right-click project → **Manage User Secrets**
-3. Add the credentials from your team lead or `.env` file
-4. Run the app
-
----
-
-## 📦 Tech Stack
+## Tech Stack
 
 - **.NET 10** (C#)
 - **ASP.NET Core MVC + Razor Pages**
 - **Entity Framework Core** with PostgreSQL (Neon)
-- **Stripe** for payments
-- **Resend** for emails
-- **ASP.NET Core Identity** for auth
+- **Stripe** — Payment processing
+- **Resend** — Email delivery
+- **ASP.NET Core Identity** — Authentication & authorization
+- **Chart.js** — Admin dashboard charts
 
----
+## Setup
 
-## 🚀 Getting Started
+1. Clone the repo
+2. Configure secrets (see below)
+3. `dotnet restore`
+4. `dotnet ef database update`
+5. `dotnet run`
+6. Visit `https://localhost:7000`
 
-1. Install dependencies: `dotnet restore`
-2. Update database: `dotnet ef database update`
-3. Run: `dotnet run`
-4. Visit: `https://localhost:7000`
+### Secrets Configuration
 
----
+The project uses secrets for sensitive data. Right-click project → **Manage User Secrets** and add:
 
-**Never commit `appsettings.json` with real credentials!**
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=...;Database=...;Username=...;Password=..."
+  },
+  "Stripe": {
+    "PublishableKey": "pk_test_...",
+    "SecretKey": "sk_test_..."
+  },
+  "Resend": {
+    "ApiKey": "re_...",
+    "FromEmail": "noreply@yourdomain.com",
+    "FromName": "DanStore"
+  },
+  "Admin": {
+    "Email": "admin@danstore.com",
+    "Password": "YourPassword123"
+  }
+}
+```
+
+An `appsettings.Example.json` is included as a reference template.
