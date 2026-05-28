@@ -37,12 +37,12 @@
                     </a>
                     <div class="flex items-center justify-between mt-auto pt-1">
                         <span class="text-xs text-brand-gray-500">$@product.Price.ToString("F2")</span>
-                        <div class="flex items-center gap-1">
-                            <a href="/home/details/@product.Id" class="btn btn-sm btn-outline-secondary text-xs py-1 px-1.5 transition-all duration-200 active:scale-95">View</a>
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <a href="/home/details/@product.Id" class="btn btn-sm btn-outline-secondary text-xs py-1 px-1 sm:px-1.5 transition-all duration-200 active:scale-95">View</a>
                             <form asp-controller="Cart" asp-action="AddToCart" method="post">
                                 <input type="hidden" name="productId" value="@product.Id" />
                                 <input type="hidden" name="quantity" value="1" />
-                                <button type="submit" class="btn btn-sm btn-primary text-xs py-1 px-1.5 transition-all duration-200 active:scale-95">Add</button>
+                                <button type="submit" class="btn btn-sm btn-primary text-xs py-1 px-1 sm:px-1.5 transition-all duration-200 active:scale-95">Add</button>
                             </form>
                         </div>
                     </div>
