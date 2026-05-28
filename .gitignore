@@ -25,6 +25,14 @@ Thumbs.db
 
 # Logs
 *.log
+stderr.txt
+stdout.txt
+
+# Separate projects (not part of main web app)
+/ECommerce.AdminPanel/
+/ECommerce.Model/
+/ECommerce.Presenter/
+/ECommerce.WebAPI/
 
 # SENSITIVE CREDENTIALS - DO NOT COMMIT!
 appsettings.json
