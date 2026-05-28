@@ -12,6 +12,6 @@ jobs:
       - uses: huggingface/hub-sync@v0.1.0
         with:
           github_repo_id: ${{ github.repository }}
-          huggingface_repo_id: danishnaseer00/danstore
+          huggingface_repo_id: Danishathugging/danstore
           hf_token: ${{ secrets.HF_TOKEN }}
           space_sdk: docker
