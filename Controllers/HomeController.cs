@@ -66,9 +66,9 @@ public class HomeController : Controller
         return View(model);
     }
 
-    public async Task<IActionResult> Shop(Guid? categoryId, string? search)
+    public async Task<IActionResult> Shop(Guid? categoryId, string? search, string? sortBy, int page = 1)
     {
-        var model = await _presenter.GetProductListAsync(search, categoryId);
+        var model = await _presenter.GetProductListAsync(search, categoryId, sortBy, page, 10);
         return View("Shop", model);
     }
 

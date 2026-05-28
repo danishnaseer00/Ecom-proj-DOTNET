@@ -19,10 +19,10 @@ public class ProductListPresenter
         _context = context;
     }
 
-    public async Task<ProductListViewModel> GetProductListAsync(string? searchTerm = null, Guid? categoryId = null)
+    public async Task<ProductListViewModel> GetProductListAsync(string? searchTerm = null, Guid? categoryId = null, string? sortBy = null, int page = 1, int pageSize = 20)
     {
-        var products = await _productRepo.GetAllAsync();
         var categories = await _categoryRepo.GetAllAsync();
+        var products = await _productRepo.GetAllAsync();
 
         var query = products.AsQueryable();
 
@@ -32,9 +32,25 @@ public class ProductListPresenter
         if (categoryId.HasValue)
             query = query.Where(p => p.CategoryId == categoryId.Value);
 
+        sortBy = sortBy?.ToLower();
+        query = sortBy switch
+        {
+            "price-asc" => query.OrderBy(p => p.Price),
+            "price-desc" => query.OrderByDescending(p => p.Price),
+            "name-asc" => query.OrderBy(p => p.Name),
+            "name-desc" => query.OrderByDescending(p => p.Name),
+            _ => query.OrderByDescending(p => p.CreatedAt)
+        };
+
+        var totalCount = query.Count();
+        var pageProducts = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
         return new ProductListViewModel
         {
-            Products = query.Select(p => new ProductViewModel
+            Products = pageProducts.Select(p => new ProductViewModel
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -53,7 +69,11 @@ public class ProductListPresenter
                 ImageUrl = c.ImageUrl
             }).ToList(),
             SearchTerm = searchTerm,
-            CategoryId = categoryId
+            CategoryId = categoryId,
+            SortBy = sortBy ?? "newest",
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
         };
     }
 

@@ -43,7 +43,7 @@
             @if (Model.Products.Any())
             {
                 <p class="text-xs sm:text-sm text-gray-500 mb-4">
-                    @Model.Products.Count() product@(Model.Products.Count() != 1 ? "s" : "") found
+                    @Model.TotalCount product@(Model.TotalCount != 1 ? "s" : "") found
                     @if (!string.IsNullOrEmpty(Model.SearchTerm))
                     {
                         <span>for "<strong>@Model.SearchTerm</strong>"</span>
@@ -83,6 +83,32 @@
                         </div>
                     }
                 </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <div class="flex items-center justify-center gap-2 mt-8">
+                        @if (Model.Page > 1)
+                        {
+                            <a href="/home/shop?page=@(Model.Page - 1)&search=@Model.SearchTerm&categoryId=@Model.CategoryId&sortBy=@Model.SortBy" class="btn btn-sm btn-outline-secondary px-3">&laquo; Prev</a>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i == Model.Page)
+                            {
+                                <span class="btn btn-sm btn-primary px-3" style="cursor:default;">@i</span>
+                            }
+                            else
+                            {
+                                <a href="/home/shop?page=@i&search=@Model.SearchTerm&categoryId=@Model.CategoryId&sortBy=@Model.SortBy" class="btn btn-sm btn-outline-secondary px-3">@i</a>
+                            }
+                        }
+                        @if (Model.Page < Model.TotalPages)
+                        {
+                            <a href="/home/shop?page=@(Model.Page + 1)&search=@Model.SearchTerm&categoryId=@Model.CategoryId&sortBy=@Model.SortBy" class="btn btn-sm btn-outline-secondary px-3">Next &raquo;</a>
+                        }
+                    </div>
+                }
             }
             else
             {
