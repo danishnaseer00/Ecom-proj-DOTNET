@@ -8,7 +8,7 @@
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="bg-danger text-white p-3 rounded mb-4 text-sm">@Model.ErrorMessage</div>
+        <div class="alert-toast">@Model.ErrorMessage</div>
     }
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -7,7 +7,7 @@
 
     @if (TempData["Success"] != null)
     {
-        <div class="bg-success text-white p-3 rounded mb-4 text-sm">@TempData["Success"]</div>
+        <div class="alert-toast">@TempData["Success"]</div>
     }
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -15,9 +15,9 @@
             <div class="card border rounded-lg p-6">
                 <h2 class="text-lg font-semibold mb-4">Get in Touch</h2>
                 <div class="space-y-4 text-sm text-gray-500">
-                    <p><i class="fas fa-envelope mr-2"></i> support@ecommerce-store.com</p>
-                    <p><i class="fas fa-phone mr-2"></i> +92 300 1234567</p>
-                    <p><i class="fas fa-map-marker-alt mr-2"></i> Karachi, Pakistan</p>
+                    <p><i class="fas fa-envelope mr-2"></i> danishnaseer000@gmail.com</p>
+                    <p><i class="fas fa-phone mr-2"></i> 03026301937</p>
+                    <p><i class="fas fa-map-marker-alt mr-2"></i> Daska, Pakistan</p>
                 </div>
                 <div class="mt-6 flex gap-4 text-xl text-gray-400">
                     <a href="#" class="hover:text-gray-600"><i class="fab fa-facebook"></i></a>
@@ -32,15 +32,15 @@
                 <form method="post" class="space-y-4">
                     <div>
                         <label class="form-label">Name</label>
-                        <input type="text" class="form-control" required />
+                        <input type="text" name="name" class="form-control" required />
                     </div>
                     <div>
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" required />
+                        <input type="email" name="email" class="form-control" required />
                     </div>
                     <div>
                         <label class="form-label">Message</label>
-                        <textarea class="form-control" rows="4" required></textarea>
+                        <textarea name="message" class="form-control" rows="4" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary w-full">Send Message</button>
                 </form>

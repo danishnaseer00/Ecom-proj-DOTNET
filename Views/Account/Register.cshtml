@@ -7,10 +7,10 @@
 
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="bg-danger text-white p-3 rounded mb-4">
+        <div class="alert-toast">
             @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
-                <p class="mb-0 text-sm">@err.ErrorMessage</p>
+                <p class="mb-0">@err.ErrorMessage</p>
             }
         </div>
     }

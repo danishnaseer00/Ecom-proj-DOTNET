@@ -50,7 +50,7 @@
 
         @if (TempData["ReviewSuccess"] != null)
         {
-            <div class="bg-success text-white p-3 rounded mb-4 text-sm">@TempData["ReviewSuccess"]</div>
+            <div class="alert-toast">@TempData["ReviewSuccess"]</div>
         }
 
         @if (User.Identity?.IsAuthenticated == true)

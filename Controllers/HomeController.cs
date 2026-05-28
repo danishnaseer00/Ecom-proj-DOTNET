@@ -16,14 +16,16 @@ public class HomeController : Controller
     private readonly ReviewPresenter _reviewPresenter;
     private readonly IRepository<Product> _productRepo;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IEmailSender _emailSender;
     private readonly AppDbContext _context;
 
-    public HomeController(ProductListPresenter presenter, ReviewPresenter reviewPresenter, IRepository<Product> productRepo, UserManager<IdentityUser> userManager, AppDbContext context)
+    public HomeController(ProductListPresenter presenter, ReviewPresenter reviewPresenter, IRepository<Product> productRepo, UserManager<IdentityUser> userManager, IEmailSender emailSender, AppDbContext context)
     {
         _presenter = presenter;
         _reviewPresenter = reviewPresenter;
         _productRepo = productRepo;
         _userManager = userManager;
+        _emailSender = emailSender;
         _context = context;
     }
 
@@ -133,5 +135,37 @@ public class HomeController : Controller
 
     public IActionResult Faq() => View();
 
+    [HttpGet]
     public IActionResult Contact() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> Contact(string name, string email, string message)
+    {
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(message))
+        {
+            ModelState.AddModelError("", "All fields are required.");
+            return View();
+        }
+
+        var body = $"""
+            <h2>New Contact Message</h2>
+            <p><strong>Name:</strong> {name}</p>
+            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Message:</strong></p>
+            <p>{message}</p>
+            """;
+
+        try
+        {
+            await _emailSender.SendEmailAsync("danishnaseer000@gmail.com", $"Contact Form — {name}", body);
+            TempData["Success"] = "Message sent! We'll get back to you soon.";
+        }
+        catch
+        {
+            ModelState.AddModelError("", "Failed to send message. Please try again.");
+            return View();
+        }
+
+        return RedirectToAction("Contact");
+    }
 }

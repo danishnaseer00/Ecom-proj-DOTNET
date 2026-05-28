@@ -137,9 +137,8 @@
         .img-preview.show { display: flex; }
         .img-preview img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; }
         .img-preview span { font-size: 0.8rem; color: #495057; }
-        .alert { padding: 0.875rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-toast { background: #2a2a3d; color: #fff; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; animation: fadeIn 0.3s ease; }
+        @@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
         .current-image img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; }
         .current-image span { font-size: 0.8rem; color: #6c757d; }
         .btn-secondary { background: transparent; color: #6c757d; border-color: #adb5bd; }
@@ -199,7 +198,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="admin-sidebar" id="adminSidebar">
-        <a href="/admin/dashboard" class="brand">Store Admin</a>
+        <a href="/admin/dashboard" class="brand">DanStore Admin</a>
         <nav>
             <a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
             <a href="/admin/products"><i class="fas fa-box"></i>Products</a>
@@ -228,17 +227,17 @@
         <div class="admin-content">
             @if (TempData["Success"] is string success)
             {
-                <div class="alert alert-success"><i class="fas fa-check-circle"></i> @success</div>
+                <div class="alert-toast"><i class="fas fa-check-circle"></i> @success</div>
             }
             @if (TempData["Error"] is string error)
             {
-                <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> @error</div>
+                <div class="alert-toast"><i class="fas fa-exclamation-circle"></i> @error</div>
             }
             @RenderBody()
         </div>
 
         <footer class="admin-footer">
-            &copy; 2026 E-Commerce Store. All rights reserved.
+            &copy; 2026 DanStore. All rights reserved.
         </footer>
     </div>
 
@@ -266,6 +265,18 @@
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toasts = document.querySelectorAll('.alert-toast');
+            toasts.forEach(function(t) {
+                setTimeout(function() {
+                    t.style.transition = 'opacity 0.3s';
+                    t.style.opacity = '0';
+                    setTimeout(function() { t.remove(); }, 300);
+                }, 2000);
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
