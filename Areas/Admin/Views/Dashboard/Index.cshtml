@@ -3,54 +3,44 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="row">
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-info">
-            <div class="inner">
-                <h3>@Model.TotalOrders</h3>
-                <p>Total Orders</p>
-            </div>
-            <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+<div class="stat-grid">
+    <div class="small-box bg-info">
+        <div class="inner">
+            <h3>@Model.TotalOrders</h3>
+            <p>Total Orders</p>
         </div>
+        <div class="icon"><i class="fas fa-shopping-cart"></i></div>
     </div>
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-success">
-            <div class="inner">
-                <h3>$@Model.Revenue.ToString("F2")</h3>
-                <p>Total Revenue</p>
-            </div>
-            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+    <div class="small-box bg-success">
+        <div class="inner">
+            <h3>$@Model.Revenue.ToString("F2")</h3>
+            <p>Total Revenue</p>
         </div>
+        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
     </div>
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-warning">
-            <div class="inner">
-                <h3>@Model.TotalProducts</h3>
-                <p>Products</p>
-            </div>
-            <div class="icon"><i class="fas fa-box"></i></div>
+    <div class="small-box bg-warning">
+        <div class="inner">
+            <h3>@Model.TotalProducts</h3>
+            <p>Products</p>
         </div>
+        <div class="icon"><i class="fas fa-box"></i></div>
     </div>
     @if (Model.LowStockCount > 0)
     {
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>@Model.LowStockCount</h3>
-                    <p>Low Stock Items</p>
-                </div>
-                <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-            </div>
-        </div>
-    }
-    <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">
-                <h3>@Model.TotalCustomers</h3>
-                <p>Customers</p>
+                <h3>@Model.LowStockCount</h3>
+                <p>Low Stock Items</p>
             </div>
-            <div class="icon"><i class="fas fa-users"></i></div>
+            <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
         </div>
+    }
+    <div class="small-box bg-danger">
+        <div class="inner">
+            <h3>@Model.TotalCustomers</h3>
+            <p>Customers</p>
+        </div>
+        <div class="icon"><i class="fas fa-users"></i></div>
     </div>
 </div>
 
@@ -61,6 +51,7 @@
             <h3 class="card-title"><i class="fas fa-exclamation-triangle mr-2"></i>Low Stock Alert</h3>
         </div>
         <div class="card-body p-0">
+            <div class="table-wrap">
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
@@ -80,6 +71,7 @@
                     }
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 }

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — E-Commerce Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #2a2a3d;
+        }
+        header {
+            border-bottom: 1px solid #adb5bd;
+            background: #fff;
+        }
+        header .inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        header a {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2a2a3d;
+            text-decoration: none;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .auth-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+        }
+        .auth-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .auth-card .form-group { margin-bottom: 1rem; }
+        .auth-card label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #495057;
+        }
+        .auth-card input, .auth-card select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .auth-card input:focus {
+            outline: none;
+            border-color: #2a2a3d;
+        }
+        .auth-card .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2a2a3d;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+        }
+        .auth-card .btn-primary:hover { background: #1e1e2e; }
+        .auth-card .text-danger { font-size: 0.8rem; color: #dc3545; }
+        .auth-card a { color: #2a2a3d; font-size: 0.875rem; }
+        .auth-card a:hover { text-decoration: underline; }
+        .auth-card .field-validation-error { font-size: 0.8rem; color: #dc3545; }
+        footer {
+            border-top: 1px solid #adb5bd;
+            background: #2a2a3d;
+            color: #d4d8dd;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="inner">
+            <a href="/">Store</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-card">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 E-Commerce Store. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
