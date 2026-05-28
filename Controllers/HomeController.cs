@@ -61,6 +61,8 @@ public class HomeController : Controller
                 CategoryId = p.CategoryId
             }).ToList();
 
+        ViewBag.RecentReviews = await _reviewPresenter.GetRecentReviewsAsync(6);
+
         return View(model);
     }
 

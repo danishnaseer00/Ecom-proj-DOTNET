@@ -51,4 +51,18 @@ public class ReviewPresenter
         };
         await _reviewRepo.AddAsync(review);
     }
+
+    public async Task<List<ReviewViewModel>> GetRecentReviewsAsync(int count = 6)
+    {
+        var reviews = await _reviewRepo.GetAllAsync();
+        return reviews.OrderByDescending(r => r.CreatedAt).Take(count).Select(r => new ReviewViewModel
+        {
+            Id = r.Id,
+            ProductId = r.ProductId,
+            UserName = r.UserName,
+            Rating = r.Rating,
+            Comment = r.Comment,
+            CreatedAt = r.CreatedAt
+        }).ToList();
+    }
 }

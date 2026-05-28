@@ -28,6 +28,17 @@ public static class SeedData
                 new Product { Name = "Design Patterns Book", Price = 44.99m, StockQuantity = 45, CategoryId = books.Id, ImageUrl = "/images/products/Design-Patterns-Elements-of-Reusable-Object-Oriented-Software-by-Erich-Gamma.webp" }
             );
             await context.SaveChangesAsync();
+
+            var products = await context.Products.ToListAsync();
+            context.Reviews.AddRange(
+                new Review { ProductId = products[0].Id, UserName = "Sarah M.", Rating = 5, Comment = "Amazing sound quality! Exceeded my expectations.", CreatedAt = DateTime.UtcNow.AddDays(-2) },
+                new Review { ProductId = products[1].Id, UserName = "James K.", Rating = 4, Comment = "Great speaker for the price. Battery life is solid.", CreatedAt = DateTime.UtcNow.AddDays(-5) },
+                new Review { ProductId = products[2].Id, UserName = "Emily R.", Rating = 5, Comment = "Softest t-shirt I've ever worn. True to size.", CreatedAt = DateTime.UtcNow.AddDays(-8) },
+                new Review { ProductId = products[3].Id, UserName = "Alex P.", Rating = 4, Comment = "Stylish jacket with a perfect fit. Highly recommend.", CreatedAt = DateTime.UtcNow.AddDays(-12) },
+                new Review { ProductId = products[4].Id, UserName = "Maria L.", Rating = 5, Comment = "Beautiful pot! Looks great in my living room.", CreatedAt = DateTime.UtcNow.AddDays(-15) },
+                new Review { ProductId = products[6].Id, UserName = "David W.", Rating = 5, Comment = "Excellent book for anyone learning C#. Very well written.", CreatedAt = DateTime.UtcNow.AddDays(-20) }
+            );
+            await context.SaveChangesAsync();
         }
 
         await UpdateProductImagesAsync(context);

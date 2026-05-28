@@ -5,7 +5,7 @@
 
 <section class="hero bg-gray-50 py-6 sm:py-8 text-center">
     <div class="max-w-4xl mx-auto px-4">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Discover Quality Products</h1>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-4">Discover Quality Products</h1>
         <p class="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">Shop the latest trends with confidence and style.</p>
         <form asp-action="Index" method="get" class="flex justify-center gap-2 max-w-sm mx-auto">
             <input type="text" name="search" class="form-control text-sm" placeholder="Search..." value="@Context.Request.Query["search"]" />
@@ -107,6 +107,82 @@
                     </div>
                 </a>
             }
+        </div>
+    </section>
+}
+
+@{
+    var recentReviews = ViewBag.RecentReviews as List<ReviewViewModel> ?? new();
+}
+
+<!-- Why Choose Us -->
+<section class="py-12 sm:py-16" style="background: #f8f9fa;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-2">Why Choose Us</h2>
+        <p class="text-sm sm:text-base text-gray-500 text-center mb-8 sm:mb-10 max-w-xl mx-auto">We're committed to delivering the best shopping experience possible.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            <div class="text-center p-4 sm:p-6">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-medal text-xl sm:text-2xl" style="color: #2a2a3d;"></i>
+                </div>
+                <h3 class="font-semibold text-sm sm:text-base mb-1">Premium Quality</h3>
+                <p class="text-xs sm:text-sm text-gray-500">Curated products from trusted brands, rigorously tested for excellence.</p>
+            </div>
+            <div class="text-center p-4 sm:p-6">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-truck text-xl sm:text-2xl" style="color: #2a2a3d;"></i>
+                </div>
+                <h3 class="font-semibold text-sm sm:text-base mb-1">Fast Delivery</h3>
+                <p class="text-xs sm:text-sm text-gray-500">Free shipping on orders over $50. Delivered to your door in 2-4 days.</p>
+            </div>
+            <div class="text-center p-4 sm:p-6">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-shield-alt text-xl sm:text-2xl" style="color: #2a2a3d;"></i>
+                </div>
+                <h3 class="font-semibold text-sm sm:text-base mb-1">Secure Checkout</h3>
+                <p class="text-xs sm:text-sm text-gray-500">Your data is encrypted and protected with industry-standard security.</p>
+            </div>
+            <div class="text-center p-4 sm:p-6">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-headset text-xl sm:text-2xl" style="color: #2a2a3d;"></i>
+                </div>
+                <h3 class="font-semibold text-sm sm:text-base mb-1">24/7 Support</h3>
+                <p class="text-xs sm:text-sm text-gray-500">Our team is here around the clock to answer your questions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Reviews -->
+@if (recentReviews.Any())
+{
+    <section class="py-12 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-2">What Our Customers Say</h2>
+            <p class="text-sm sm:text-base text-gray-500 text-center mb-8 sm:mb-10 max-w-xl mx-auto">Real reviews from real customers.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 auto-rows-fr">
+                @foreach (var review in recentReviews)
+                {
+                    <div class="border rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                        <div class="flex items-center gap-1 mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star text-xs @(i <= review.Rating ? "text-yellow-400" : "text-gray-200")"></i>
+                            }
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3 italic line-clamp-3">"@review.Comment"</p>
+                        <div class="flex items-center gap-2 mt-auto">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0" style="background: #2a2a3d;">
+                                @review.UserName.Substring(0, 1).ToUpper()
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium truncate">@review.UserName</p>
+                                <p class="text-xs text-gray-400">@review.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </section>
 }
