@@ -43,8 +43,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-app.UseHttpsRedirection();
+else
+{
+    // Development: No HTTPS redirection or HSTS
+}
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();

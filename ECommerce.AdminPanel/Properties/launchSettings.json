@@ -3,8 +3,8 @@
     "AdminPanel": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:6001;http://localhost:6000",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:7080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

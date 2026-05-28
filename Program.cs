@@ -29,7 +29,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 var app = builder.Build();
 
@@ -72,6 +75,10 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
