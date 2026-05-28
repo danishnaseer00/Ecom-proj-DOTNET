@@ -95,6 +95,15 @@
         .admin-content .small-box .inner h3 { font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 700; margin: 0; color: #fff; }
         .admin-content .small-box .inner p { font-size: 0.85rem; opacity: 0.9; margin: 0.25rem 0 0; }
         .admin-content .small-box .icon { position: absolute; top: 0.75rem; right: 0.75rem; font-size: 2.5rem; opacity: 0.2; }
+        .bg-sidebar { background: #2a2a3d; }
+        .admin-content .small-box.bg-sidebar .icon { opacity: 0.15; }
+
+        /* Chart grid */
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.25rem; }
+        .chart-card .card-header h3 { font-size: 0.95rem; }
+        .chart-card .card-header h3 i { margin-right: 0.5rem; color: #2a2a3d; }
+        .chart-card .card-body { padding: 0.75rem; }
+        .chart-card canvas { max-height: 220px; max-width: 100%; }
 
         /* Forms */
         .form-group { margin-bottom: 1.25rem; }
@@ -174,11 +183,13 @@
             .admin-content .small-box .inner h3 { font-size: 1.25rem; }
             .admin-content .small-box .inner p { font-size: 0.75rem; }
             .admin-content .small-box .icon { font-size: 1.75rem; }
+            .chart-grid { grid-template-columns: 1fr; gap: 1rem; }
         }
 
         @@media (max-width: 480px) {
             .admin-content { padding: 0.75rem; }
             .stat-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+            .chart-grid { grid-template-columns: 1fr; gap: 0.75rem; }
             .admin-content .card { margin-bottom: 0.75rem; }
             .admin-navbar { height: 56px; }
         }

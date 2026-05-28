@@ -4,21 +4,21 @@
 }
 
 <div class="stat-grid">
-    <div class="small-box bg-info">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalOrders</h3>
             <p>Total Orders</p>
         </div>
         <div class="icon"><i class="fas fa-shopping-cart"></i></div>
     </div>
-    <div class="small-box bg-success">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>$@Model.Revenue.ToString("F2")</h3>
             <p>Total Revenue</p>
         </div>
         <div class="icon"><i class="fas fa-dollar-sign"></i></div>
     </div>
-    <div class="small-box bg-warning">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalProducts</h3>
             <p>Products</p>
@@ -27,7 +27,7 @@
     </div>
     @if (Model.LowStockCount > 0)
     {
-        <div class="small-box bg-danger">
+        <div class="small-box bg-sidebar">
             <div class="inner">
                 <h3>@Model.LowStockCount</h3>
                 <p>Low Stock Items</p>
@@ -35,12 +35,47 @@
             <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
         </div>
     }
-    <div class="small-box bg-danger">
+    <div class="small-box bg-sidebar">
         <div class="inner">
             <h3>@Model.TotalCustomers</h3>
             <p>Customers</p>
         </div>
         <div class="icon"><i class="fas fa-users"></i></div>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-pie"></i> Orders by Status</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="ordersChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-line"></i> Monthly Revenue</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="revenueChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-chart-bar"></i> Top Products</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="topProductsChart" height="220"></canvas>
+        </div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header">
+            <h3><i class="fas fa-tags"></i> Products by Category</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="categoriesChart" height="220"></canvas>
+        </div>
     </div>
 </div>
 
@@ -75,3 +110,101 @@
         </div>
     </div>
 }
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var sidebarColor = '#2a2a3d';
+        var chartColors = ['#2a2a3d', '#4a4a6a', '#6a6a9a', '#8a8aba', '#aaaada', '#cacafa'];
+
+        // Orders by Status (Doughnut)
+        var ordersCtx = document.getElementById('ordersChart').getContext('2d');
+        new Chart(ordersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.OrdersByStatus.Keys)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.OrdersByStatus.Values)),
+                    backgroundColor: chartColors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter' }, padding: 12 } } }
+            }
+        });
+
+        // Monthly Revenue (Line)
+        var revCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Month))),
+                datasets: [{
+                    label: 'Revenue',
+                    data: @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Revenue))),
+                    borderColor: sidebarColor,
+                    backgroundColor: sidebarColor + '22',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: sidebarColor,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: function(v) { return '$' + v; } } }
+                }
+            }
+        });
+
+        // Top Products (Horizontal Bar)
+        var topCtx = document.getElementById('topProductsChart').getContext('2d');
+        new Chart(topCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.TopProducts.Select(p => p.Name.Length > 18 ? p.Name.Substring(0, 16) + ".." : p.Name))),
+                datasets: [{
+                    label: 'Units Sold',
+                    data: @Html.Raw(Json.Serialize(Model.TopProducts.Select(p => p.TotalSold))),
+                    backgroundColor: chartColors[0],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+
+        // Products by Category (Bar)
+        var catCtx = document.getElementById('categoriesChart').getContext('2d');
+        new Chart(catCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.ProductsByCategory.Keys)),
+                datasets: [{
+                    label: 'Products',
+                    data: @Html.Raw(Json.Serialize(Model.ProductsByCategory.Values)),
+                    backgroundColor: chartColors.slice(0, @Model.ProductsByCategory.Count),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    });
+</script>

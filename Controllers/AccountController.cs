@@ -248,6 +248,11 @@ public class AccountController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            return View(new Customer { UserId = user.Id, FirstName = "Admin", LastName = "User" });
+        }
+
         var customer = await _customerRepo.GetByUserIdAsync(user.Id);
         if (customer == null)
         {
@@ -264,6 +269,12 @@ public class AccountController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
+
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            TempData["Error"] = "Admin profiles cannot be edited.";
+            return RedirectToAction("Profile");
+        }
 
         var customer = await _customerRepo.GetByUserIdAsync(user.Id);
         if (customer == null) return NotFound();
