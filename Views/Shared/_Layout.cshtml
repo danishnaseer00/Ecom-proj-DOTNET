@@ -25,6 +25,10 @@
                     </a>
                     @if (SignInManager.IsSignedIn(User))
                     {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="/admin" class="text-sm font-medium transition-colors duration-200" style="color: #2a2a3d; font-weight: 700;">Admin Panel</a>
+                        }
                         <a href="/account/profile" class="text-sm font-medium transition-colors duration-200" style="color: #6c757d;">@User.Identity?.Name</a>
                         <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
                             <button type="submit" class="text-sm font-medium transition-colors duration-200 btn btn-sm btn-outline-secondary" style="border: none; background: none; color: #6c757d; cursor: pointer;">Logout</button>
@@ -49,6 +53,10 @@
                     </a>
                     @if (SignInManager.IsSignedIn(User))
                     {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="/admin" class="block text-sm font-medium" style="color: #2a2a3d; font-weight: 700;">Admin Panel</a>
+                        }
                         <a href="/account/profile" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d;">@User.Identity?.Name</a>
                         <form asp-controller="Account" asp-action="Logout" method="post">
                             <button type="submit" class="block text-sm font-medium transition-colors duration-200" style="color: #6c757d; background: none; border: none; cursor: pointer; padding: 0;">Logout</button>
