@@ -43,6 +43,9 @@ Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product 
 - **Hugging Face Spaces** — Docker deployment
 - **Neon** — PostgreSQL database (serverless)
 - **UptimeRobot** — Keep-alive pings
+- **Brevo** - For email Verification
+- **GitHub Actions** — CI/CD pipeline for automated testing and deployment
+- **Docker** — Containerization for consistent deployment
 
 ## Project Structure
 
@@ -76,8 +79,8 @@ Ecommerce-web-project/
 
 ### Prerequisites
 - .NET 10 SDK
-- PostgreSQL database (Neon free tier recommended)
-- Stripe account (test mode)
+- PostgreSQL database (Neon DB)
+- Stripe account
 
 ### Local Development
 
@@ -88,27 +91,6 @@ Ecommerce-web-project/
 5. `dotnet run`
 6. Visit `https://localhost:5289`
 
-### Secrets Configuration
-
-Right-click project → **Manage User Secrets** and add:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=...;Database=...;Username=...;Password=..."
-  },
-  "Stripe": {
-    "PublishableKey": "pk_test_...",
-    "SecretKey": "sk_test_..."
-  },
-  "Admin": {
-    "Email": "admin@store.com",
-    "Password": "Admin@123"
-  }
-}
-```
-
-Default admin credentials (if not set): `admin@store.com` / `Admin@123`.
 
 ### Deployment (Hugging Face Spaces)
 
@@ -122,4 +104,4 @@ Set these environment variables in your Space secrets:
 | `ADMIN__EMAIL` | Admin email |
 | `ADMIN__PASSWORD` | Admin password |
 
-The app auto-migrates the database and seeds the admin user on first run.
+
