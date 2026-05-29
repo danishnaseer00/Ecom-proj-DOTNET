@@ -37,12 +37,12 @@ public class AdminDashboardPresenter
 
         var lowStockProducts = products.Where(p => p.StockQuantity > 0 && p.StockQuantity <= 5).ToList();
 
-        var deliveredPaid = orders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Paid).ToList();
+        var paidOrders = orders.Where(o => o.Status == OrderStatus.Paid || o.Status == OrderStatus.Shipped || o.Status == OrderStatus.Delivered).ToList();
 
         var ordersByStatus = Enum.GetValues<OrderStatus>()
             .ToDictionary(s => s.ToString(), s => orders.Count(o => o.Status == s));
 
-        var monthlyRevenue = deliveredPaid
+        var monthlyRevenue = paidOrders
             .GroupBy(o => new { o.CreatedAt.Year, o.CreatedAt.Month })
             .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
             .Select(g => new MonthlyRevenue
@@ -74,7 +74,7 @@ public class AdminDashboardPresenter
             TotalProducts = products.Count,
             TotalOrders = orders.Count,
             TotalCustomers = customers.Count,
-            Revenue = deliveredPaid.Sum(o => o.TotalAmount),
+            Revenue = paidOrders.Sum(o => o.TotalAmount),
             LowStockCount = lowStockProducts.Count,
             LowStockProducts = lowStockProducts.Select(p => new ProductViewModel
             {
