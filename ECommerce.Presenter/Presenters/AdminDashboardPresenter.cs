@@ -42,6 +42,16 @@ public class AdminDashboardPresenter
         var ordersByStatus = Enum.GetValues<OrderStatus>()
             .ToDictionary(s => s.ToString(), s => orders.Count(o => o.Status == s));
 
+        var dailyRevenue = paidOrders
+            .GroupBy(o => o.CreatedAt.Date)
+            .OrderBy(g => g.Key)
+            .Select(g => new DailyRevenue
+            {
+                Date = g.Key.ToString("MMM dd"),
+                Revenue = g.Sum(o => o.TotalAmount)
+            })
+            .ToList();
+
         var monthlyRevenue = paidOrders
             .GroupBy(o => new { o.CreatedAt.Year, o.CreatedAt.Month })
             .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
@@ -84,6 +94,7 @@ public class AdminDashboardPresenter
                 Price = p.Price
             }).ToList(),
             OrdersByStatus = ordersByStatus,
+            DailyRevenues = dailyRevenue,
             MonthlyRevenues = monthlyRevenue,
             TopProducts = topProducts,
             ProductsByCategory = productsByCategory

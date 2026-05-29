@@ -53,14 +53,18 @@
             <canvas id="ordersChart" height="220"></canvas>
         </div>
     </div>
-    <div class="card chart-card">
-        <div class="card-header">
-            <h3><i class="fas fa-chart-line"></i> Monthly Revenue</h3>
+        <div class="card chart-card">
+            <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+                <h3><i class="fas fa-chart-line"></i> Revenue</h3>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary active" id="btnDaily" onclick="switchRevenueView('daily')" style="padding:2px 8px;font-size:0.75rem;">Daily</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="btnMonthly" onclick="switchRevenueView('monthly')" style="padding:2px 8px;font-size:0.75rem;">Monthly</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="220"></canvas>
+            </div>
         </div>
-        <div class="card-body">
-            <canvas id="revenueChart" height="220"></canvas>
-        </div>
-    </div>
     <div class="card chart-card">
         <div class="card-header">
             <h3><i class="fas fa-chart-bar"></i> Top Products</h3>
@@ -111,6 +115,10 @@
     </div>
 }
 
+<style>
+    .btn-group .btn.active { background: #2a2a3d; color: #fff; border-color: #2a2a3d; }
+    .btn-group .btn:not(.active) { background: #fff; color: #2a2a3d; border-color: #adb5bd; }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -141,21 +149,27 @@
             }
         });
 
-        // Monthly Revenue (Line)
+        // Revenue (Line — Daily / Monthly toggle)
+        var dailyLabels = @Html.Raw(Json.Serialize(Model.DailyRevenues.Select(r => r.Date)));
+        var dailyData = @Html.Raw(Json.Serialize(Model.DailyRevenues.Select(r => r.Revenue)));
+        var monthlyLabels = @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Month)));
+        var monthlyData = @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Revenue)));
+
         var revCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revCtx, {
+        var revenueChart = new Chart(revCtx, {
             type: 'line',
             data: {
-                labels: @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Month))),
+                labels: dailyLabels,
                 datasets: [{
                     label: 'Revenue',
-                    data: @Html.Raw(Json.Serialize(Model.MonthlyRevenues.Select(r => r.Revenue))),
+                    data: dailyData,
                     borderColor: accent1,
                     backgroundColor: accent1 + '22',
                     fill: true,
-                    tension: 0.3,
+                    tension: 0.4,
                     pointBackgroundColor: accent1,
-                    pointRadius: 4
+                    pointRadius: 3,
+                    pointHoverRadius: 5
                 }]
             },
             options: {
@@ -163,10 +177,19 @@
                 maintainAspectRatio: true,
                 plugins: { legend: { display: false } },
                 scales: {
+                    x: { ticks: { maxTicksLimit: 15 } },
                     y: { beginAtZero: true, ticks: { callback: function(v) { return '$' + v; } } }
                 }
             }
         });
+
+        window.switchRevenueView = function(view) {
+            document.getElementById('btnDaily').classList.toggle('active', view === 'daily');
+            document.getElementById('btnMonthly').classList.toggle('active', view === 'monthly');
+            revenueChart.data.labels = view === 'daily' ? dailyLabels : monthlyLabels;
+            revenueChart.data.datasets[0].data = view === 'daily' ? dailyData : monthlyData;
+            revenueChart.update();
+        };
 
         // Top Products (Horizontal Bar)
         var topCtx = document.getElementById('topProductsChart').getContext('2d');

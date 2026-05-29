@@ -11,6 +11,7 @@ public class DashboardViewModel
 
     public Dictionary<string, int> OrdersByStatus { get; set; } = new();
     public List<MonthlyRevenue> MonthlyRevenues { get; set; } = new();
+    public List<DailyRevenue> DailyRevenues { get; set; } = new();
     public List<ProductSales> TopProducts { get; set; } = new();
     public Dictionary<string, int> ProductsByCategory { get; set; } = new();
 }
@@ -18,6 +19,12 @@ public class DashboardViewModel
 public class MonthlyRevenue
 {
     public string Month { get; set; } = string.Empty;
+    public decimal Revenue { get; set; }
+}
+
+public class DailyRevenue
+{
+    public string Date { get; set; } = string.Empty;
     public decimal Revenue { get; set; }
 }
 
