@@ -95,30 +95,11 @@ public class AccountController : Controller
         };
         await _customerRepo.AddAsync(customer);
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmLink = Url.Action("ConfirmEmail", "Account",
-            new { userId = user.Id, token }, Request.Scheme)!;
+        user.EmailConfirmed = true;
+        await _userManager.UpdateAsync(user);
 
-        var body = $"""
-            <h2>Welcome to Store!</h2>
-            <p>Please confirm your email by clicking the link below:</p>
-            <p><a href="{confirmLink}">Confirm Email</a></p>
-            <p>If you didn't create an account, you can ignore this email.</p>
-            """;
-
-        try
-        {
-            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Email] Failed to send confirmation to {email}: {ex.Message}");
-        }
-
-        TempData["ConfirmEmailLink"] = confirmLink;
-        TempData["ConfirmEmail"] = email;
-        TempData["ReturnUrl"] = returnUrl;
-        return RedirectToAction("RegisterConfirmation");
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
@@ -227,35 +208,11 @@ public class AccountController : Controller
             return View();
         }
 
-        if (await _userManager.IsEmailConfirmedAsync(user))
-        {
-            ModelState.AddModelError("", "This email is already confirmed. Please log in.");
-            return View();
-        }
+        user.EmailConfirmed = true;
+        await _userManager.UpdateAsync(user);
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmLink = Url.Action("ConfirmEmail", "Account",
-            new { userId = user.Id, token }, Request.Scheme)!;
-
-        var body = $"""
-            <h2>Welcome to Store!</h2>
-            <p>Please confirm your email by clicking the link below:</p>
-            <p><a href="{confirmLink}">Confirm Email</a></p>
-            <p>If you didn't create an account, you can ignore this email.</p>
-            """;
-
-        try
-        {
-            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Email] Failed to send confirmation to {email}: {ex.Message}");
-        }
-
-        TempData["ConfirmEmailLink"] = confirmLink;
-        TempData["ConfirmEmail"] = email;
-        return RedirectToAction("RegisterConfirmation");
+        await _signInManager.SignInAsync(user, isPersistent: false);
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]
