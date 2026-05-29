@@ -25,6 +25,13 @@ public class CustomersController : Controller
             .Select(u => u.Id)
             .ToHashSet();
         var filtered = customers.Where(c => !adminUserIds.Contains(c.UserId)).ToList();
+
+        foreach (var customer in filtered)
+        {
+            var user = await _userManager.FindByIdAsync(customer.UserId);
+            customer.Email = user?.Email ?? "";
+        }
+
         return View(filtered);
     }
 }
