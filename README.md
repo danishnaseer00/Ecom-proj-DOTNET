@@ -59,8 +59,8 @@ The application follows a **three-layer architecture** built on top of ASP.NET C
 │                        PRESENTATION LAYER                        │
 │                                                                  │
 │   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│   │  Controllers  │───▶│     Views    │───▶│  ViewModels  │      │
-│   │  (MVC)        │    │  (Razor .cshtml) │  (DTOs)      │      │
+│   │  Controllers  │───▶│  ViewModels  │───▶│     Views    │      │
+│   │  (MVC)        │    │  (DTOs)      │    │  (Razor .cshtml) │  │
 │   └──────┬───────┘    └──────────────┘    └──────────────┘      │
 │          │                                                       │
 │          │ HTTP Session, Cookies, User.Identity                  │
