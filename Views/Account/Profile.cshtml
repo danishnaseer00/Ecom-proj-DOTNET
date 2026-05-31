@@ -61,21 +61,3 @@
         <button type="submit" class="btn btn-primary">Change Password</button>
     </form>
 </div>
-
-@section Scripts {
-    <script>
-        document.querySelectorAll('.password-toggle').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var input = this.parentElement.querySelector('input');
-                var icon = this.querySelector('i');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.replace('fa-eye', 'fa-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.replace('fa-eye-slash', 'fa-eye');
-                }
-            });
-        });
-    </script>
-}
