@@ -29,150 +29,100 @@ Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product 
 
 ## Tech Stack
 
-### Backend
-- **.NET 10** (C#) — ASP.NET Core MVC
-- **Entity Framework Core 10** — ORM with PostgreSQL (Neon)
-- **ASP.NET Core Identity** — Authentication, authorization, role management
-- **Stripe** — Payment processing API
+**.NET 10** — ASP.NET Core MVC • **EF Core 10** — PostgreSQL (Neon) • **Identity** — Auth & roles • **Stripe** — Payments
 
-### Frontend
-- **Razor Views** — Server-rendered pages
-- **Tailwind CSS** — Utility-first styling
-- **Bootstrap 5.3** — Grid & components (CDN)
-- **jQuery 3.7 + jQuery Validate** — Client-side form validation (CDN)
-- **Chart.js** — Admin dashboard charts
-- **Font Awesome 6** — Icons
+**Razor Views** • **Tailwind CSS** • **Bootstrap 5.3** • **jQuery 3.7 + Validate** • **Chart.js** • **Font Awesome 6**
 
-### DevOps & Hosting
-- **Hugging Face Spaces** — Docker-based hosting
-- **Docker** — Containerization
-- **Neon** — Serverless PostgreSQL
-- **GitHub Actions** — CI/CD (auto-sync to HF Spaces)
-- **UptimeRobot** — Keep-alive pings
+**Hugging Face Spaces** (Docker) • **Neon** • **GitHub Actions** • **UptimeRobot**
 
 ## Architecture
 
-The application follows a **three-layer architecture** built on top of ASP.NET Core MVC. Each layer has a single responsibility and communicates only with the layer directly below it.
+Three-layer architecture on ASP.NET Core MVC:
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        PRESENTATION LAYER                        │
 │                                                                  │
-│   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
-│   │  Controllers  │───▶│  ViewModels  │───▶│     Views    │      │
-│   │  (MVC)        │    │  (DTOs)      │    │  (Razor .cshtml) │  │
-│   └──────┬───────┘    └──────────────┘    └──────────────┘      │
-│          │                                                       │
-│          │ HTTP Session, Cookies, User.Identity                  │
-│          ▼                                                       │
-│   ┌──────────────────────────────────────────────────────┐       │
-│   │  AccountController  │  CartController                │       │
-│   │  HomeController     │  CheckoutController            │       │
-│   │  Admin/Orders       │  Admin/Products                │       │
-│   └──────────────────────────────────────────────────────┘       │
+│   Controllers (HTTP) ──▶ ViewModels (DTOs) ──▶ Views (Razor)   │
+│                                                                  │
+│   AccountController  │  CartController  │  HomeController       │
+│   CheckoutController │  Admin/*                                  │
 └──────────────────────────┬───────────────────────────────────────┘
-                           │
-                           ▼ Delegates business logic
+                           │ Delegates business logic
+                           ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                       BUSINESS LOGIC LAYER                        │
 │                     (ECommerce.Presenter)                         │
 │                                                                  │
-│   ┌──────────────────────────────────────────────────────┐       │
-│   │  ProductListPresenter  │  CartPresenter              │       │
-│   │  CheckoutPresenter     │  OrderPresenter             │       │
-│   │  AdminDashboardPresenter                              │       │
-│   └──────────────────────────────────────────────────────┘       │
+│   ProductListPresenter  │  CartPresenter  │  CheckoutPresenter  │
+│   OrderPresenter  │  AdminDashboardPresenter                     │
 │                                                                  │
-│   Responsibilities:                                              │
-│   • Calculations (subtotal, tax, revenue aggregation)            │
-│   • Validation (stock check, data integrity)                     │
-│   • Orchestration (call multiple repos, combine results)         │
-│   • Mapping (entities → view models)                             │
-│   • No dependency on HTTP, sessions, or controllers              │
+│   → Calculations, validation, orchestration, entity→DTO mapping │
+│   → No dependency on HTTP, sessions, or controllers             │
 └──────────────────────────┬───────────────────────────────────────┘
-                           │
-                           ▼ Calls Repository
+                           │ Calls Repository
+                           ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                        DATA ACCESS LAYER                          │
 │                       (ECommerce.Model)                           │
 │                                                                  │
-│   ┌────────────┐    ┌──────────────┐    ┌──────────────────┐     │
-│   │ Repositories│───▶│  AppDbContext│───▶│  PostgreSQL (EF) │     │
-│   │ IRepository │    │  Migrations │    │  (Neon)          │     │
-│   │ ICustomer   │    │  SeedData   │    │                  │     │
-│   └────────────┘    └──────────────┘    └──────────────────┘     │
+│   Repositories ──▶ AppDbContext ──▶ PostgreSQL (EF Core)         │
 │                                                                  │
 │   Entities: Product, Order, Cart, CartItem, Review,              │
 │              Category, Customer, OrderItem                        │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### Request Lifecycle Example — Checkout
+### Request Lifecycle (Checkout Example)
 
 ```
 Browser ──GET /checkout──▶ Routing ──▶ [Authorize] ──▶ CheckoutController.Index()
-                                                              │
-                                                              ▼
-                                              _cartPresenter.GetCheckoutData(userId)
-                                                              │
-                                                              ▼
-                                              _cartRepo.GetCart(userId)  ──▶  PostgreSQL
-                                                              │
-                                                              ▼
-                                              Calculates totals, validates stock
-                                                              │
-                                                              ▼
-                                              Returns CheckoutViewModel
-                                                              │
-                                                              ▼
-                                              View → Renders HTML → Browser
+                                                               │
+                                                               ▼
+                                               _cartPresenter.GetCheckoutData(userId)
+                                                               │
+                                                               ▼
+                                               _cartRepo.GetCart(userId)  ──▶  PostgreSQL
+                                                               │
+                                                               ▼
+                                               Calculates totals, validates stock
+                                                               │
+                                                               ▼
+                                               Returns CheckoutViewModel
+                                                               │
+                                                               ▼
+                                               View → Renders HTML → Browser
 ```
 
-### Key Design Decisions
+### Key Decisions
 
-- **Cart persistence**: Guest items stored in `Session`; authenticated users' carts in DB via `Cart`/`CartItem` tables. Cart data survives login/logout via `GetEffectiveCartAsync()`.
-- **Email verification skipped**: `RequireConfirmedAccount = false`. Users auto-confirmed and signed in immediately on register. All email calls go through `NoopEmailSender` (logs silently).
-- **Role-based redirect**: On login, admins go to `/admin/dashboard`, customers go to `/`.
-- **Revenue aggregation**: Includes `Paid` + `Shipped` + `Delivered` order statuses. Chart supports daily and monthly views.
-- **Toast notifications**: Auto-dismiss after 2 seconds with fade-out animation. Dark theme (`#2a2a3d`).
+- **Cart persistence**: Guest items in `Session`, logged-in users in DB. Survives login/logout.
+- **Email skipped**: Auto-confirm on register. `NoopEmailSender` logs silently (HF blocks SMTP).
+- **Role redirect**: Admin → `/admin/dashboard`, Customer → `/`.
+- **Revenue**: Includes `Paid` + `Shipped` + `Delivered`. Daily/monthly chart toggle.
+- **Toasts**: Auto-dismiss after 2s. Dark theme (`#2a2a3d`).
 
 ## Project Structure
 
 ```
 Ecommerce-web-project/
-├── Controllers/                  # MVC controllers (presentation)
-│   ├── Admin/                    # Admin panel controllers
+├── Controllers/                  # MVC controllers
+│   ├── Admin/                    # Admin panel
 │   ├── AccountController.cs      # Auth (login, register, profile)
 │   ├── CartController.cs         # Shopping cart
 │   ├── CheckoutController.cs     # Stripe checkout
 │   └── HomeController.cs         # Pages & reviews
-│
 ├── Views/                        # Razor views
-│   ├── Home/                     # Index, Shop, Details, Contact
-│   ├── Account/                  # Login, Register, Profile, Orders
-│   ├── Cart/                     # Shopping cart
-│   ├── Checkout/                 # Checkout page
-│   └── Shared/                   # Layout, partials, toast scripts
-│
-├── Areas/Admin/Views/            # Admin panel views (dashboard, products, orders, customers, categories)
-│
-├── ECommerce.Model/              # Data layer (class library)
-│   ├── Entities/                 # Product, Order, Cart, CartItem, Review, Category, Customer, OrderItem
-│   ├── Data/                     # AppDbContext, Migrations, SeedData
-│   └── Repositories/             # Generic IRepository<T>, ICustomerRepository
-│
-├── ECommerce.Presenter/          # Business logic layer (class library)
-│   ├── Presenters/               # ProductList, Cart, Checkout, AdminDashboard, Order, NoopEmailSender
-│   └── ViewModels/               # CartItemSession, CheckoutViewModel, OrderListViewModel, etc.
-│
-├── wwwroot/                      # Static files
-│   ├── css/                      # Custom styles
-│   ├── images/                   # Product images (products/, banners/)
-│   └── js/                       # Custom JavaScript
-│
-├── Program.cs                    # App entry point, DI, middleware
-├── Dockerfile                    # Docker build for HF Spaces
-└── .github/workflows/            # CI/CD pipelines (sync-to-hf.yml)
+│   ├── Home/  Account/  Cart/  Checkout/  Shared/
+├── Areas/Admin/Views/            # Admin panel views
+├── ECommerce.Model/              # Data layer
+│   ├── Entities/  Data/  Repositories/
+├── ECommerce.Presenter/          # Business logic layer
+│   ├── Presenters/  ViewModels/
+├── wwwroot/                      # Static files (css, images, js)
+├── Program.cs                    # Entry point, DI, middleware
+├── Dockerfile                    # Container build
+└── .github/workflows/            # CI/CD (sync-to-hf.yml)
 ```
 
 ## Setup
@@ -180,35 +130,25 @@ Ecommerce-web-project/
 ### Prerequisites
 - .NET 10 SDK
 - PostgreSQL database (Neon or local)
-- Stripe account (publishable + secret keys)
+- Stripe account
 
 ### Local Development
 
-1. Clone the repo
-2. Configure user secrets (see below)
-3. Apply migrations:
-   ```
-   dotnet ef database update
-   ```
-4. Run the application:
-   ```
-   dotnet run
-   ```
-5. Visit `https://localhost:5289`
+```
+dotnet ef database update
+dotnet run
+Visit https://localhost:5289
+```
 
 ### Configuration
-
-Set these via `dotnet user-secrets` or environment variables:
 
 | Key | Description |
 |---|---|
 | `ConnectionStrings:DefaultConnection` | PostgreSQL connection string |
-| `Stripe:PublishableKey` | Stripe publishable key (pk_test_...) |
-| `Stripe:SecretKey` | Stripe secret key (sk_test_...) |
+| `Stripe:PublishableKey` | Stripe publishable key |
+| `Stripe:SecretKey` | Stripe secret key |
 
 ### Deployment (Hugging Face Spaces)
-
-Set these environment variables in your Space secrets:
 
 | Key | Value |
 |---|---|
@@ -217,5 +157,3 @@ Set these environment variables in your Space secrets:
 | `STRIPE__SECRETKEY` | Stripe secret key |
 | `ADMIN__EMAIL` | Admin email |
 | `ADMIN__PASSWORD` | Admin password |
-
-
