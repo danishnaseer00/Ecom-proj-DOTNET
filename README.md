@@ -30,74 +30,111 @@ Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product 
 ## Tech Stack
 
 ### Backend
-| Layer | Technology |
-|---|---|
-| Runtime | .NET 10 (C#) |
-| Framework | ASP.NET Core MVC |
-| ORM | Entity Framework Core 10 |
-| Database | PostgreSQL (Neon serverless) |
-| Auth | ASP.NET Core Identity |
-| Payments | Stripe SDK |
-| Architecture | Repository Pattern + Presenter (Service) Layer |
+- **.NET 10** (C#) — ASP.NET Core MVC
+- **Entity Framework Core 10** — ORM with PostgreSQL (Neon)
+- **ASP.NET Core Identity** — Authentication, authorization, role management
+- **Stripe** — Payment processing API
 
 ### Frontend
-| Library | Purpose |
-|---|---|
-| Razor Pages | Server-rendered HTML |
-| Tailwind CSS | Utility-first styling |
-| Bootstrap 5.3 | Grid, components (via CDN) |
-| Chart.js | Dashboard revenue charts |
-| Font Awesome 6 | Icons (free) |
-| jQuery 3.7 | DOM manipulation (via CDN) |
+- **Razor Views** — Server-rendered pages
+- **Tailwind CSS** — Utility-first styling
+- **Bootstrap 5.3** — Grid & components (CDN)
+- **jQuery 3.7 + jQuery Validate** — Client-side form validation (CDN)
+- **Chart.js** — Admin dashboard charts
+- **Font Awesome 6** — Icons
 
 ### DevOps & Hosting
-| Service | Role |
-|---|---|
-| Hugging Face Spaces | Docker-based hosting |
-| Docker | Containerization |
-| Neon | Serverless PostgreSQL |
-| GitHub Actions | CI/CD (auto-sync to HF Spaces) |
-| UptimeRobot | Keep-alive pings |
+- **Hugging Face Spaces** — Docker-based hosting
+- **Docker** — Containerization
+- **Neon** — Serverless PostgreSQL
+- **GitHub Actions** — CI/CD (auto-sync to HF Spaces)
+- **UptimeRobot** — Keep-alive pings
 
 ## Architecture
 
-The application follows a **three-layer architecture** with clear separation of concerns:
+The application follows a **three-layer architecture** built on top of ASP.NET Core MVC. Each layer has a single responsibility and communicates only with the layer directly below it.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                   Presentation Layer                     │
-│   Controllers (MVC)  │  Views (Razor)  │  ViewModels   │
-│   CartController     │  Index.cshtml   │  CartViewModel │
-│   HomeController     │  Shop.cshtml    │  ProductVM     │
-│   CheckoutController │  Details.cshtml │  CheckoutVM    │
-│   AccountController  │  Profile.cshtml │  OrderListVM   │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Business Logic Layer                    │
-│     Presenters (ECommerce.Presenter)                     │
-│   ProductListPresenter │  CartPresenter                  │
-│   OrderPresenter       │  CheckoutPresenter              │
-│   AdminDashboardPresenter                                │
-│   Domain services, validation, calculations              │
-└─────────────────────────┬───────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Data Access Layer                      │
-│   Repositories  │  DbContext  │  Entities  │  Migrations  │
-│   IRepository<T>│  AppDbContext│  Product   │  SeedData    │
-│   ICustomerRepo │              │  Order     │             │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                        PRESENTATION LAYER                        │
+│                                                                  │
+│   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
+│   │  Controllers  │───▶│     Views    │───▶│  ViewModels  │      │
+│   │  (MVC)        │    │  (Razor .cshtml) │  (DTOs)      │      │
+│   └──────┬───────┘    └──────────────┘    └──────────────┘      │
+│          │                                                       │
+│          │ HTTP Session, Cookies, User.Identity                  │
+│          ▼                                                       │
+│   ┌──────────────────────────────────────────────────────┐       │
+│   │  AccountController  │  CartController                │       │
+│   │  HomeController     │  CheckoutController            │       │
+│   │  Admin/Orders       │  Admin/Products                │       │
+│   └──────────────────────────────────────────────────────┘       │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+                           ▼ Delegates business logic
+┌──────────────────────────────────────────────────────────────────┐
+│                       BUSINESS LOGIC LAYER                        │
+│                     (ECommerce.Presenter)                         │
+│                                                                  │
+│   ┌──────────────────────────────────────────────────────┐       │
+│   │  ProductListPresenter  │  CartPresenter              │       │
+│   │  CheckoutPresenter     │  OrderPresenter             │       │
+│   │  AdminDashboardPresenter                              │       │
+│   └──────────────────────────────────────────────────────┘       │
+│                                                                  │
+│   Responsibilities:                                              │
+│   • Calculations (subtotal, tax, revenue aggregation)            │
+│   • Validation (stock check, data integrity)                     │
+│   • Orchestration (call multiple repos, combine results)         │
+│   • Mapping (entities → view models)                             │
+│   • No dependency on HTTP, sessions, or controllers              │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+                           ▼ Calls Repository
+┌──────────────────────────────────────────────────────────────────┐
+│                        DATA ACCESS LAYER                          │
+│                       (ECommerce.Model)                           │
+│                                                                  │
+│   ┌────────────┐    ┌──────────────┐    ┌──────────────────┐     │
+│   │ Repositories│───▶│  AppDbContext│───▶│  PostgreSQL (EF) │     │
+│   │ IRepository │    │  Migrations │    │  (Neon)          │     │
+│   │ ICustomer   │    │  SeedData   │    │                  │     │
+│   └────────────┘    └──────────────┘    └──────────────────┘     │
+│                                                                  │
+│   Entities: Product, Order, Cart, CartItem, Review,              │
+│              Category, Customer, OrderItem                        │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-### Key Flows
+### Request Lifecycle Example — Checkout
 
-- **Cart**: Guest items stored in `Session`; on login, CartController reads/writes `Cart`/`CartItem` tables via `IRepository<Cart>`. Cart data survives across authentication boundaries.
-- **Checkout**: `[Authorize]`-protected; reads cart from DB for authenticated users (same logic as Cart), processes Stripe payment, creates order + order items, clears cart.
-- **Admin Dashboard**: Revenue aggregates across `Paid` / `Shipped` / `Delivered` order statuses; chart supports daily and monthly views.
-- **Auth**: Role-based redirect after login — admins go to `/admin/dashboard`, customers to `/`. Email verification is skipped (auto-confirmed on register).
+```
+Browser ──GET /checkout──▶ Routing ──▶ [Authorize] ──▶ CheckoutController.Index()
+                                                              │
+                                                              ▼
+                                              _cartPresenter.GetCheckoutData(userId)
+                                                              │
+                                                              ▼
+                                              _cartRepo.GetCart(userId)  ──▶  PostgreSQL
+                                                              │
+                                                              ▼
+                                              Calculates totals, validates stock
+                                                              │
+                                                              ▼
+                                              Returns CheckoutViewModel
+                                                              │
+                                                              ▼
+                                              View → Renders HTML → Browser
+```
+
+### Key Design Decisions
+
+- **Cart persistence**: Guest items stored in `Session`; authenticated users' carts in DB via `Cart`/`CartItem` tables. Cart data survives login/logout via `GetEffectiveCartAsync()`.
+- **Email verification skipped**: `RequireConfirmedAccount = false`. Users auto-confirmed and signed in immediately on register. All email calls go through `NoopEmailSender` (logs silently).
+- **Role-based redirect**: On login, admins go to `/admin/dashboard`, customers go to `/`.
+- **Revenue aggregation**: Includes `Paid` + `Shipped` + `Delivered` order statuses. Chart supports daily and monthly views.
+- **Toast notifications**: Auto-dismiss after 2 seconds with fade-out animation. Dark theme (`#2a2a3d`).
 
 ## Project Structure
 
