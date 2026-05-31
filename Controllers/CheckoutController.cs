@@ -1,3 +1,4 @@
+using ECommerce.Model.Entities;
 using ECommerce.Model.Repositories;
 using ECommerce.Presenter.Presenters;
 using ECommerce.Presenter.ViewModels;
@@ -17,6 +18,8 @@ public class CheckoutController : Controller
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _config;
+    private readonly IRepository<Cart> _cartRepo;
+    private readonly IRepository<CartItem> _cartItemRepo;
 
     public CheckoutController(
         CheckoutPresenter checkoutPresenter,
@@ -25,7 +28,9 @@ public class CheckoutController : Controller
         ICustomerRepository customerRepo,
         UserManager<IdentityUser> userManager,
         IEmailSender emailSender,
-        IConfiguration config)
+        IConfiguration config,
+        IRepository<Cart> cartRepo,
+        IRepository<CartItem> cartItemRepo)
     {
         _checkoutPresenter = checkoutPresenter;
         _cartPresenter = cartPresenter;
@@ -34,13 +39,15 @@ public class CheckoutController : Controller
         _userManager = userManager;
         _emailSender = emailSender;
         _config = config;
+        _cartRepo = cartRepo;
+        _cartItemRepo = cartItemRepo;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Index()
     {
-        var sessionItems = GetCart();
+        var sessionItems = await GetCartAsync();
         if (sessionItems.Count == 0)
             return RedirectToAction("Index", "Cart");
 
@@ -65,7 +72,7 @@ public class CheckoutController : Controller
     [Authorize]
     public async Task<IActionResult> PlaceOrder(string street, string city, string state, string zipCode, string country, string paymentIntentId)
     {
-        var sessionItems = GetCart();
+        var sessionItems = await GetCartAsync();
         if (sessionItems.Count == 0)
             return RedirectToAction("Index", "Cart");
 
@@ -131,6 +138,25 @@ public class CheckoutController : Controller
         return View(order);
     }
 
-    private List<CartItemSession> GetCart() =>
-        JsonSerializer.Deserialize<List<CartItemSession>>(HttpContext.Session.GetString("Cart") ?? "[]") ?? new();
+    private async Task<List<CartItemSession>> GetCartAsync()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var customer = await _customerRepo.GetByUserIdAsync(user.Id);
+                if (customer != null)
+                {
+                    var dbCart = (await _cartRepo.FindAsync(c => c.CustomerId == customer.Id)).FirstOrDefault();
+                    if (dbCart != null)
+                    {
+                        var dbItems = await _cartItemRepo.FindAsync(i => i.CartId == dbCart.Id);
+                        return dbItems.Select(i => new CartItemSession { ProductId = i.ProductId, Quantity = i.Quantity }).ToList();
+                    }
+                }
+            }
+        }
+        return JsonSerializer.Deserialize<List<CartItemSession>>(HttpContext.Session.GetString("Cart") ?? "[]") ?? new();
+    }
 }
