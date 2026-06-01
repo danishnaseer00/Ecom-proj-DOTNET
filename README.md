@@ -9,7 +9,7 @@ pinned: false
 
 # DanStore — E-Commerce Web Application
 
-Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product catalog, shopping cart, checkout with Stripe, admin dashboard, user authentication, product reviews, and responsive design.
+Full-featured e-commerce platform built with ASP.NET Core. Includes product catalog, shopping cart, checkout with Stripe, admin dashboard, user authentication, product reviews, and responsive design.
 
 ## Live Demo
 
@@ -29,21 +29,21 @@ Full-featured e-commerce platform built with ASP.NET Core MVC. Includes product 
 
 ## Tech Stack
 
-**.NET 10** — ASP.NET Core MVC • **EF Core 10** — PostgreSQL (Neon) • **Identity** — Auth & roles • **Stripe** — Payments
+**.NET 10** — ASP.NET Core • **EF Core 10** — PostgreSQL (Neon) • **Identity** — Auth & roles • **Stripe** — Payments
 
-**Razor Views** • **Tailwind CSS** • **Bootstrap 5.3** • **jQuery 3.7 + Validate** • **Chart.js** • **Font Awesome 6**
+**Razor Views** • **Tailwind CSS** • **jQuery 3.7 + Validate** • **Chart.js** • **Font Awesome 6**
 
 **Hugging Face Spaces** (Docker) • **Neon** • **GitHub Actions** • **UptimeRobot**
 
 ## Architecture
 
-Three-layer architecture on ASP.NET Core MVC:
+Three-layer architecture:
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        PRESENTATION LAYER                        │
 │                                                                  │
-│   Controllers (HTTP) ──▶ ViewModels (DTOs) ──▶ Views (Razor)   │
+│   Controllers ──▶ ViewModels (DTOs) ──▶ Views (Razor)         │
 │                                                                  │
 │   AccountController  │  CartController  │  HomeController       │
 │   CheckoutController │  Admin/*                                  │
@@ -106,7 +106,7 @@ Browser ──GET /checkout──▶ Routing ──▶ [Authorize] ──▶ Che
 
 ```
 Ecommerce-web-project/
-├── Controllers/                  # MVC controllers
+├── Controllers/                  # Controllers
 │   ├── Admin/                    # Admin panel
 │   ├── AccountController.cs      # Auth (login, register, profile)
 │   ├── CartController.cs         # Shopping cart
