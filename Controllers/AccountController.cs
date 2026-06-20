@@ -77,7 +77,7 @@ public class AccountController : Controller
             return View();
         }
 
-        var user = new IdentityUser { UserName = email, Email = email };
+        var user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
@@ -95,30 +95,12 @@ public class AccountController : Controller
         };
         await _customerRepo.AddAsync(customer);
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmLink = Url.Action("ConfirmEmail", "Account",
-            new { userId = user.Id, token }, Request.Scheme)!;
+        await _signInManager.SignInAsync(user, isPersistent: false);
 
-        var body = $"""
-            <h2>Welcome to DanStore!</h2>
-            <p>Please confirm your email by clicking the link below:</p>
-            <p><a href="{confirmLink}">Confirm Email</a></p>
-            <p>If you didn't create an account, you can ignore this email.</p>
-            """;
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
 
-        try
-        {
-            await _emailSender.SendEmailAsync(email, "Confirm your email", body);
-        }
-        catch
-        {
-            ModelState.AddModelError("", "Failed to send verification email. Please try again.");
-            return View();
-        }
-
-        TempData["ConfirmEmail"] = email;
-        TempData["ReturnUrl"] = returnUrl;
-        return RedirectToAction("RegisterConfirmation");
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
@@ -176,14 +158,6 @@ public class AccountController : Controller
         if (user == null)
         {
             ModelState.AddModelError("", "Invalid login attempt.");
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
-        }
-
-        if (!await _userManager.IsEmailConfirmedAsync(user))
-        {
-            ModelState.AddModelError("", "You must confirm your email before logging in.");
-            ViewBag.UnconfirmedEmail = email;
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
